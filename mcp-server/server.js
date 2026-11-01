@@ -98,7 +98,7 @@ function optimizePrompt(text) {
 function createMcpServer() {
   const server = new McpServer(
     { name: "hm-token-intelligence", version: "0.2.0" },
-    { instructions: "HM Token Intelligence helps users detect prompt ambiguity, missing output criteria, repetition and unnecessary verbosity. Explain each finding plainly, protect the user's intended outcome, and never claim access to hidden ChatGPT context. Token counts cover only supplied text and the selected encoding. Never rewrite or submit a prompt without explicit user approval.", maxToolInputElements: 16 }
+    { instructions: "HM Token Intelligence helps users detect prompt ambiguity, missing output criteria, repetition and unnecessary verbosity. Explain each finding plainly, protect the user's intended outcome, and never claim access to hidden ChatGPT context. Token counts cover only supplied text and the selected encoding. Never rewrite or submit a prompt without explicit user approval." }
   );
 
   registerAppResource(server, "hm-prompt-inspector", "ui://hm-token-intelligence/inspector.html", {},
