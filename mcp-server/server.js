@@ -85,6 +85,24 @@ function analyzePrompt(text, encodingName = "o200k_base") {
   };
 }
 
+function comparePrompts(original, revised, encodingName = "o200k_base") {
+  const originalTokens = countTokens(original, encodingName);
+  const revisedTokens = countTokens(revised, encodingName);
+  const tokensSaved = originalTokens - revisedTokens;
+  return {
+    encoding: encodingName,
+    original_tokens: originalTokens,
+    revised_tokens: revisedTokens,
+    tokens_saved: tokensSaved,
+    reduction_percent: originalTokens ? Number((tokensSaved / originalTokens * 100).toFixed(2)) : 0,
+    original_characters: original.length,
+    revised_characters: revised.length,
+    exact_for_supplied_text: true,
+    semantic_equivalence_checked: false,
+    note: "Counts are exact for the two supplied texts and selected encoding. This tool does not prove that the revised prompt preserves the original meaning; HM must perform a separate semantic comparison."
+  };
+}
+
 function optimizePrompt(text) {
   const before = text;
   let output = text.replace(/\r\n?/gu, "\n");
@@ -151,21 +169,7 @@ function createMcpServer() {
       exact_for_supplied_text: z.boolean(), semantic_equivalence_checked: z.boolean(), note: z.string()
     }
   }, async ({ original, revised, encoding = "o200k_base" }) => {
-    const originalTokens = countTokens(original, encoding);
-    const revisedTokens = countTokens(revised, encoding);
-    const saved = originalTokens - revisedTokens;
-    const result = {
-      encoding,
-      original_tokens: originalTokens,
-      revised_tokens: revisedTokens,
-      tokens_saved: saved,
-      reduction_percent: originalTokens ? Number((saved / originalTokens * 100).toFixed(2)) : 0,
-      original_characters: original.length,
-      revised_characters: revised.length,
-      exact_for_supplied_text: true,
-      semantic_equivalence_checked: false,
-      note: "Counts are exact for the two supplied texts and selected encoding. This tool does not prove that the revised prompt preserves the original meaning; HM must perform a separate semantic comparison."
-    };
+    const result = comparePrompts(original, revised, encoding);
     return {
       content: [{ type: "text", text: `HM comparison (${encoding}): original ${originalTokens}, revised ${revisedTokens}, difference ${saved} tokens (${result.reduction_percent}%). Semantic equivalence has not been established by the tokenizer.` }],
       structuredContent: result
@@ -238,4 +242,4 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === resolve(process.argv[1
   httpServer.listen(PORT, "0.0.0.0", () => console.log(`HM Token Intelligence MCP listening on port ${PORT} at ${MCP_PATH}`));
 }
 
-export { analyzePrompt, optimizePrompt, countTokens, createRateLimiter };
+export { analyzePrompt, optimizePrompt, countTokens, comparePrompts, createRateLimiter };
