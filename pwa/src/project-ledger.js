@@ -103,6 +103,21 @@ export function exportLedger(ledger) {
   return JSON.stringify({ ...ledger, exportedAt: new Date().toISOString(), privacyNote: "Only usage metadata and token totals are stored; pasted message contents are not retained." }, null, 2);
 }
 
+export function parseLedgerImport(raw) {
+  const parsed = JSON.parse(raw);
+  if (parsed?.version !== 1 || !Array.isArray(parsed.projects)) throw new Error("File không đúng định dạng sổ HM (version 1).");
+  const projects = parsed.projects.map(project => {
+    if (!project || typeof project.name !== "string" || !project.name.trim() || !Array.isArray(project.entries)) throw new Error("Dữ liệu dự án trong file không hợp lệ.");
+    const entries = project.entries.map(entry => {
+      if (!entry || !Number.isInteger(entry.tokens) || entry.tokens < 0 || !ENCODINGS.includes(entry.encoding) || !["user", "assistant", "system", "other"].includes(entry.role)) throw new Error("Một mục ghi nhận trong file không hợp lệ.");
+      return { id: String(entry.id || ""), conversationName: String(entry.conversationName || "Cuộc trò chuyện"), role: entry.role, kind: ["normal", "rework", "clarification", "revision"].includes(entry.kind) ? entry.kind : "normal", model: String(entry.model || ""), encoding: entry.encoding, tokens: entry.tokens, characters: Number.isFinite(entry.characters) ? entry.characters : 0, words: Number.isFinite(entry.words) ? entry.words : 0, date: String(entry.date || "") };
+    });
+    const encodings = [...new Set(entries.map(entry => entry.encoding))];
+    if (encodings.length > 1) throw new Error("File chứa dự án dùng nhiều encoding; hãy tách dự án trước khi nhập.");
+    return { id: String(project.id || ""), name: project.name.trim(), encoding: project.encoding || encodings[0] || "o200k_base", createdAt: String(project.createdAt || ""), entries };
+  });
+  return { version: 1, projects };
+}
 export function loadLedger(storage = globalThis.localStorage) {
   try {
     const parsed = JSON.parse(storage?.getItem(LEDGER_STORAGE_KEY) || "null");
