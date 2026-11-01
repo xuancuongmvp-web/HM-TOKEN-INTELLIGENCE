@@ -4,6 +4,7 @@ on:
     branches: [main]
     paths:
       - "mcp-server/**"
+      - "pwa/**"
       - ".github/workflows/mcp-server.yml"
   pull_request:
     paths:
@@ -27,6 +28,15 @@ jobs:
         run: npm audit --omit=dev --audit-level=high
       - name: Build deployment Docker image
         run: docker build -f mcp-server/Dockerfile -t hm-token-intelligence-mcp .
-      - name: Run tests
+      - name: Run MCP tests
         working-directory: mcp-server
         run: npm test
+      - name: Install PWA dependencies
+        working-directory: pwa
+        run: npm install
+      - name: Run PWA analyzer tests
+        working-directory: pwa
+        run: npm test
+      - name: Build PWA
+        working-directory: pwa
+        run: npm run build
