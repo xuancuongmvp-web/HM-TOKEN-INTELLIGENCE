@@ -11,6 +11,7 @@ on:
     paths:
       - "mcp-server/**"
       - "pwa/**"
+      - "extension/**"
       - ".github/workflows/mcp-server.yml"
 jobs:
   test:
