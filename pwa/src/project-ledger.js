@@ -78,6 +78,22 @@ export function buildProjectReport(project) {
   if (!insights.length) insights.push({ title: "Chưa đủ dữ liệu để rút kinh nghiệm", detail: "Hãy ghi nhận cả prompt và phản hồi; đánh dấu các lần hỏi lại hoặc làm lại để báo cáo có thêm ngữ cảnh." });
   return { project: project?.name || "Dự án", ...summary, reworkTokens, reworkEntries, reworkPercent, clarificationTokens, userToAiRatio, topConversation: conversations[0] || null, conversations, insights, limitation: "Báo cáo chỉ phản ánh các đoạn văn bản người dùng chủ động ghi nhận, không phải toàn bộ lịch sử hay usage/billing chính thức của nhà cung cấp AI." };
 }
+export function exportProjectReportCSV(project) {
+  const report = buildProjectReport(project);
+  const rows = [
+    ["project", "metric", "value"],
+    [report.project, "total_tokens", report.totalTokens],
+    [report.project, "user_prompt_tokens", report.userTokens],
+    [report.project, "ai_response_tokens", report.assistantTokens],
+    [report.project, "rework_revision_tokens", report.reworkTokens],
+    [report.project, "rework_percent", report.reworkPercent],
+    [report.project, "clarification_tokens", report.clarificationTokens],
+    ...report.conversations.map(item => [report.project, "conversation:" + item.name, item.tokens]),
+    ...Object.entries(report.byModel).map(([model, tokens]) => [report.project, "model:" + model, tokens])
+  ];
+  const escape = value => '"' + String(value ?? "").replace(/"/gu, '""') + '"';
+  return "\\uFEFF" + rows.map(row => row.map(escape).join(",")).join("\\r\\n");
+}
 export function removeProject(ledger, projectId) {
   ledger.projects = ledger.projects.filter(project => project.id !== projectId);
   return ledger;
