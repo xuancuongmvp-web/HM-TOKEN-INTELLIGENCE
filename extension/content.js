@@ -79,8 +79,8 @@
       const editable = el.isContentEditable ||
         el.getAttribute("contenteditable") === "true" ||
         el.getAttribute("role") === "textbox" ||
-        el instanceof HTMLTextAreaElement ||
-        (el instanceof HTMLInputElement && ["text","search",""].includes(el.type)) ||
+        el.tagName === "TEXTAREA" ||
+        (el.tagName === "INPUT" && ["text","search",""].includes(el.type)) ||
         el.hasAttribute("data-lexical-editor") ||
         el.hasAttribute("data-slate-editor");
       if (!editable) continue;
@@ -101,7 +101,7 @@
       if (el === document.activeElement || roots.some(root => root.activeElement === el)) score += 120;
       if (el.id === "prompt-textarea" || el.getAttribute("data-testid") === "prompt-textarea") score += 100;
       if (el.isContentEditable || el.getAttribute("contenteditable") === "true") score += 65;
-      if (el instanceof HTMLTextAreaElement) score += 60;
+      if (el.tagName === "TEXTAREA") score += 60;
       if (el.getAttribute("role") === "textbox") score += 35;
       if (el.hasAttribute("data-lexical-editor") || el.hasAttribute("data-slate-editor")) score += 45;
       if (/(message|prompt|ask|chat|reply|nhắn tin|hỏi)/i.test(label)) score += 35;
@@ -391,6 +391,8 @@
   });
 
   attach();
+  document.addEventListener("focusin", () => setTimeout(attach, 80), true);
+  document.addEventListener("click", () => setTimeout(attach, 80), true);
   new MutationObserver(attach).observe(document.documentElement,{childList:true,subtree:true});
   addEventListener("resize",positionUI,{passive:true});
   addEventListener("scroll",positionUI,{passive:true,capture:true});
