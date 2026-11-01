@@ -26,7 +26,8 @@ HM's primary product must work independently from ChatGPT subscription level. Th
 - [ ] Deploy the PWA to a public HTTPS address
 - [ ] Verify install flow on Windows, macOS, Android, and iOS browsers
 - [ ] Add reliable share-to-HM workflow on supported mobile browsers
-- [ ] Stabilize Chrome/Edge extension and verify current ChatGPT Web composer selectors
+- [x] Build in-composer HM extension MVP with analysis, clarification fields, prompt proposal preview, and explicit insert action
+- [ ] Stabilize Chrome/Edge extension and verify live composer selectors on ChatGPT, Gemini, Claude, Copilot, and Perplexity
 - [ ] Add exact tokenizer to packaged extension build
 - [ ] Publish signed/reviewed browser extension packages
 - [ ] Verify native ChatGPT Desktop/mobile options only where host APIs permit
