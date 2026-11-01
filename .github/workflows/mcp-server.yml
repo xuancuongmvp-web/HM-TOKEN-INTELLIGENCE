@@ -35,6 +35,9 @@ jobs:
       - name: Install PWA dependencies
         working-directory: pwa
         run: npm install
+      - name: Audit PWA dependencies
+        working-directory: pwa
+        run: npm audit --audit-level=high
       - name: Run PWA analyzer tests
         working-directory: pwa
         run: npm test
