@@ -113,3 +113,10 @@ test("rejects imported project with mixed encodings", () => {
   }]});
   assert.throws(() => parseLedgerImport(raw), /nhiều encoding/);
 });
+
+test("escapes spreadsheet formula prefixes in CSV labels", () => {
+  const ledger = createProjectLedger();
+  addUsageEntry(ledger, { projectName: "=IMPORT", conversationName: "Plan", role: "user", text: "Hello" });
+  const csv = exportProjectReportCSV(ledger.projects[0]);
+  assert.match(csv, /'=IMPORT/);
+});
