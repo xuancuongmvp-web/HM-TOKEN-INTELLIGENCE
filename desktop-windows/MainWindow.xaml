@@ -1,0 +1,103 @@
+<Window x:Class="HM.Desktop.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="HM Token Intelligence — Desktop Companion"
+        Width="1060" Height="900" MinWidth="820" MinHeight="680"
+        WindowStartupLocation="CenterScreen"
+        Background="#0B1020" Foreground="#E9EDF5"
+        FontFamily="Segoe UI">
+    <Grid Margin="22">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <DockPanel Grid.Row="0" Margin="0,0,0,18">
+            <Border Width="48" Height="48" CornerRadius="12" BorderBrush="#8F713D" BorderThickness="1" Background="#151D2D" DockPanel.Dock="Left">
+                <TextBlock Text="HM" Foreground="#D7AE62" FontWeight="Bold" FontSize="17" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            </Border>
+            <StackPanel Margin="13,2,0,0">
+                <TextBlock Text="HM TOKEN INTELLIGENCE" FontSize="15" FontWeight="Bold" CharacterSpacing="90"/>
+                <TextBlock Text="DESKTOP COMPANION · LOCAL-FIRST" FontSize="10" Foreground="#98A4B8" Margin="0,4,0,0"/>
+            </StackPanel>
+            <Border DockPanel.Dock="Right" Background="#173A31" CornerRadius="12" Padding="10,6" VerticalAlignment="Center">
+                <TextBlock Text="● PHÂN TÍCH CỤC BỘ" Foreground="#8CE0B6" FontSize="10" FontWeight="SemiBold"/>
+            </Border>
+        </DockPanel>
+
+        <Border Grid.Row="1" Background="#162238" BorderBrush="#30415A" BorderThickness="1" CornerRadius="12" Padding="13" Margin="0,0,0,14">
+            <DockPanel>
+                <StackPanel>
+                    <TextBlock Text="DÙNG VỚI CHATGPT DESKTOP / ỨNG DỤNG AI KHÁC" Foreground="#D7AE62" FontWeight="Bold" FontSize="11"/>
+                    <TextBlock Text="Trong ô chat: Ctrl+A → Ctrl+C → Ctrl+Shift+H để mở HM và nạp prompt đã sao chép. Sau khi duyệt bản cải thiện, chép lại và dán vào ô chat." Foreground="#C5D0DF" TextWrapping="Wrap" Margin="0,5,0,0" FontSize="12"/>
+                </StackPanel>
+                <Button DockPanel.Dock="Right" Content="ĐỌC CLIPBOARD" Background="#D7AE62" Foreground="#171B24" Click="ReadClipboard_Click" Margin="15,0,0,0" VerticalAlignment="Center"/>
+            </DockPanel>
+        </Border>
+
+        <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
+            <StackPanel>
+                <Grid Margin="0,0,0,8">
+                    <Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                    <TextBlock Text="01 · PROMPT GỐC" FontSize="13" FontWeight="Bold" Foreground="#E4C98F" VerticalAlignment="Center"/>
+                    <TextBlock x:Name="PromptStats" Grid.Column="1" Text="0 ký tự" Foreground="#98A4B8" FontSize="10" VerticalAlignment="Center"/>
+                </Grid>
+                <TextBox x:Name="PromptInput" Height="155" FontSize="13" AcceptsReturn="True"
+                         VerticalScrollBarVisibility="Auto" TextChanged="PromptInput_TextChanged"
+                         ToolTip="Dán prompt cần phân tích vào đây hoặc dùng Ctrl+A, Ctrl+C trong ô chat rồi Ctrl+Shift+H."/>
+                <StackPanel Orientation="Horizontal" Margin="0,11,0,18">
+                    <Button Content="PHÂN TÍCH PROMPT" Background="#D7AE62" Foreground="#171B24" Click="Analyze_Click"/>
+                    <Button Content="XÓA" Background="#26344B" Foreground="#E9EDF5" Click="Clear_Click"/>
+                    <TextBlock x:Name="StatusText" Text="Phím tắt toàn hệ thống: Ctrl+Shift+H" Foreground="#98A4B8" VerticalAlignment="Center" Margin="8,0,0,0" FontSize="11"/>
+                </StackPanel>
+
+                <Border Background="#121D31" BorderBrush="#2B3B54" BorderThickness="1" CornerRadius="12" Padding="15" Margin="0,0,0,14">
+                    <StackPanel>
+                        <TextBlock Text="02 · KẾT QUẢ ĐÁNH GIÁ" FontWeight="Bold" Foreground="#E4C98F" FontSize="13"/>
+                        <Grid Margin="0,12,0,10">
+                            <Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition/><ColumnDefinition/><ColumnDefinition/></Grid.ColumnDefinitions>
+                            <StackPanel><TextBlock Text="TOKEN ƯỚC TÍNH" Foreground="#98A4B8" FontSize="9"/><TextBlock x:Name="TokenCount" Text="—" FontSize="22" FontWeight="Bold" Margin="0,4,0,0"/></StackPanel>
+                            <StackPanel Grid.Column="1"><TextBlock Text="SỐ TỪ" Foreground="#98A4B8" FontSize="9"/><TextBlock x:Name="WordCount" Text="—" FontSize="22" FontWeight="Bold" Margin="0,4,0,0"/></StackPanel>
+                            <StackPanel Grid.Column="2"><TextBlock Text="CẤU TRÚC" Foreground="#98A4B8" FontSize="9"/><TextBlock x:Name="StructureCount" Text="—" FontSize="22" FontWeight="Bold" Margin="0,4,0,0"/></StackPanel>
+                            <StackPanel Grid.Column="3"><TextBlock Text="SỐ CẢNH BÁO" Foreground="#98A4B8" FontSize="9"/><TextBlock x:Name="IssueCount" Text="—" FontSize="22" FontWeight="Bold" Margin="0,4,0,0"/></StackPanel>
+                        </Grid>
+                        <UniformGrid x:Name="DimensionsGrid" Columns="3" Rows="2" Margin="0,3,0,10"/>
+                        <TextBlock Text="HM NHẬN DIỆN" Foreground="#E4C98F" FontWeight="Bold" FontSize="11" Margin="0,8,0,6"/>
+                        <ItemsControl x:Name="FindingsList"/>
+                        <TextBlock x:Name="AnalysisNote" Text="Điểm cấu trúc chỉ là tín hiệu heuristic, không phải xác suất AI trả lời đúng." Foreground="#98A4B8" TextWrapping="Wrap" FontSize="10" Margin="0,9,0,0"/>
+                    </StackPanel>
+                </Border>
+
+                <Border Background="#121D31" BorderBrush="#2B3B54" BorderThickness="1" CornerRadius="12" Padding="15">
+                    <StackPanel>
+                        <TextBlock Text="03 · LÀM RÕ VÀ CẢI THIỆN PROMPT" FontWeight="Bold" Foreground="#E4C98F" FontSize="13"/>
+                        <TextBlock Text="Điền thông tin còn thiếu. HM giữ nguyên yêu cầu gốc và chỉ bổ sung nội dung bạn cung cấp." Foreground="#98A4B8" FontSize="10" TextWrapping="Wrap" Margin="0,5,0,12"/>
+                        <UniformGrid Columns="2">
+                            <StackPanel Margin="0,0,8,8"><TextBlock Text="Phạm vi cụ thể" FontSize="10" Foreground="#C5D0DF" Margin="0,0,0,4"/><TextBox x:Name="ScopeInput" Height="58" FontSize="11"/></StackPanel>
+                            <StackPanel Margin="8,0,0,8"><TextBlock Text="Bối cảnh / dữ liệu" FontSize="10" Foreground="#C5D0DF" Margin="0,0,0,4"/><TextBox x:Name="ContextInput" Height="58" FontSize="11"/></StackPanel>
+                            <StackPanel Margin="0,0,8,8"><TextBlock Text="Đầu ra mong muốn" FontSize="10" Foreground="#C5D0DF" Margin="0,0,0,4"/><TextBox x:Name="OutputInput" Height="58" FontSize="11"/></StackPanel>
+                            <StackPanel Margin="8,0,0,8"><TextBlock Text="Ràng buộc cần tuân thủ" FontSize="10" Foreground="#C5D0DF" Margin="0,0,0,4"/><TextBox x:Name="ConstraintsInput" Height="58" FontSize="11"/></StackPanel>
+                            <StackPanel Margin="0,0,8,8"><TextBlock Text="Đối tượng sử dụng" FontSize="10" Foreground="#C5D0DF" Margin="0,0,0,4"/><TextBox x:Name="AudienceInput" Height="58" FontSize="11"/></StackPanel>
+                            <StackPanel Margin="8,0,0,8"><TextBlock Text="Tiêu chí hoàn thành" FontSize="10" Foreground="#C5D0DF" Margin="0,0,0,4"/><TextBox x:Name="CriteriaInput" Height="58" FontSize="11"/></StackPanel>
+                        </UniformGrid>
+                        <Button Content="TẠO BẢN PROMPT CẢI THIỆN" Background="#D7AE62" Foreground="#171B24" HorizontalAlignment="Left" Margin="0,6,0,10" Click="BuildProposal_Click"/>
+                        <TextBlock Text="BẢN ĐỀ XUẤT — KIỂM TRA TRƯỚC KHI DÁN" Foreground="#E4C98F" FontWeight="Bold" FontSize="11" Margin="0,5,0,6"/>
+                        <TextBox x:Name="ProposalOutput" MinHeight="145" FontSize="12" IsReadOnly="False"/>
+                        <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                            <Button Content="SAO CHÉP BẢN ĐỀ XUẤT" Background="#D7AE62" Foreground="#171B24" Click="CopyProposal_Click"/>
+                            <Button Content="XÓA TRƯỜNG BỔ SUNG" Background="#26344B" Foreground="#E9EDF5" Click="ClearFields_Click"/>
+                        </StackPanel>
+                        <TextBlock x:Name="CopyStatus" Text="HM không tự sửa hoặc gửi prompt." Foreground="#98A4B8" FontSize="10" Margin="0,8,0,0"/>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </ScrollViewer>
+
+        <DockPanel Grid.Row="3" Margin="0,14,0,0">
+            <TextBlock Text="HM DESKTOP 0.1 · Không cần API key · Không gửi prompt lên máy chủ" Foreground="#718098" FontSize="10" VerticalAlignment="Center"/>
+            <TextBlock Text="Ctrl+Shift+H" Foreground="#D7AE62" FontWeight="Bold" FontSize="11" DockPanel.Dock="Right"/>
+        </DockPanel>
+    </Grid>
+</Window>
