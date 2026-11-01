@@ -4,7 +4,7 @@ The PWA is the primary plan-independent way to use HM. It works independently of
 
 ## Run locally
 
-Requires Node.js 20+.
+Requires Node.js 20.19+ (or Node.js 22.12+).
 
 ```bash
 cd pwa
