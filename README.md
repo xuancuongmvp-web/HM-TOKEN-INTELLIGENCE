@@ -74,6 +74,12 @@ A responsive, installable HM web app/PWA will let users paste or share prompt te
 - Warnings are indicators for user review, not definitive proof that a prompt will fail.
 - HM must explain potential waste and suggest improvements, but the user remains in control. Never auto-edit or auto-submit.
 
+## Direct ChatGPT integration (MCP App)
+
+An initial ChatGPT-compatible MCP server and interactive prompt inspector now live in [mcp-server](mcp-server/README.md). It exposes `analyze_prompt` and `optimize_prompt_formatting` and uses a real tokenizer for the text explicitly supplied to it.
+
+**This is implementation code, not a live installation.** The server still needs to be deployed to a stable HTTPS host and tested through ChatGPT's custom app connection flow. See [ChatGPT setup](docs/CHATGPT_SETUP.md). The native ChatGPT composer is not automatically monitored by MCP.
+
 ## API
 
 - `GET /health`
