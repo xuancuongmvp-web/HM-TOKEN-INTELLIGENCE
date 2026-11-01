@@ -1,10 +1,28 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { analyzePrompt, optimizePrompt, countTokens, createRateLimiter } from "../server.js";
+import { analyzePrompt, optimizePrompt, countTokens, comparePrompts, createRateLimiter } from "../server.js";
 
 test("counts text with a supported tokenizer", () => {
   assert.ok(countTokens("Hello world", "o200k_base") > 0);
 });
+test("returns exact token counts for supplied text", () => {
+  const text = "HM token intelligence";
+  const tokens = countTokens(text, "o200k_base");
+  assert.ok(Number.isInteger(tokens));
+  assert.ok(tokens > 0);
+});
+
+test("compares original and revised prompts using the same tokenizer", () => {
+  const original = "Please, please analyze everything in great detail.";
+  const revised = "Analyze the supplied report and list its three main risks.";
+  const result = comparePrompts(original, revised, "o200k_base");
+  assert.equal(result.exact_for_supplied_text, true);
+  assert.equal(result.semantic_equivalence_checked, false);
+  assert.equal(result.original_tokens, countTokens(original, "o200k_base"));
+  assert.equal(result.revised_tokens, countTokens(revised, "o200k_base"));
+  assert.equal(result.tokens_saved, result.original_tokens - result.revised_tokens);
+});
+
 test("flags vague scope and missing output format", () => {
   const result = analyzePrompt("Hãy phân tích tất cả mọi thứ giúp tôi.");
   assert.ok(result.issues.some(issue => issue.code === "scope"));
