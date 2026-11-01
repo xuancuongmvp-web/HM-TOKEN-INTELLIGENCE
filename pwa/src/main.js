@@ -1,5 +1,5 @@
 import { analyzePrompt, cleanFormatting } from "./analyzer.js";
-import { addUsageEntry, summarizeEntries, loadLedger, saveLedger, exportLedger, removeProject } from "./project-ledger.js";
+import { addUsageEntry, summarizeEntries, buildProjectReport, loadLedger, saveLedger, exportLedger, removeProject } from "./project-ledger.js";
 import "./style.css";
 const $ = selector => document.querySelector(selector);
 const input = $("#prompt");
@@ -119,8 +119,10 @@ const ledger = loadLedger();
 function renderLedger() {
   const summaryNode = $("#ledger-summary");
   const projectsNode = $("#ledger-projects");
+  const retrospectiveNode = $("#ledger-retrospective");
   summaryNode.replaceChildren();
   projectsNode.replaceChildren();
+  retrospectiveNode.replaceChildren();
   const allEntries = ledger.projects.flatMap(project => project.entries);
   const total = summarizeEntries(allEntries);
   const encodingNames = Object.keys(total.byEncoding);
@@ -161,6 +163,28 @@ function renderLedger() {
     Object.entries(stats.byModel).forEach(([model, tokens]) => card.append(
       el("small", "ledger-model", model + ": " + tokens.toLocaleString("vi-VN") + " token")));
     projectsNode.append(card);
+
+    const report = buildProjectReport(project);
+    const reportCard = el("article", "ledger-report");
+    reportCard.append(el("h3", "", "Tổng kết & rút kinh nghiệm: " + project.name));
+    const reportMetrics = el("div", "ledger-report-metrics");
+    [
+      ["LÀM LẠI / CHỈNH SỬA", report.reworkTokens.toLocaleString("vi-VN") + " token (" + report.reworkPercent + "%)"],
+      ["HỎI LẠI / LÀM RÕ", report.clarificationTokens.toLocaleString("vi-VN") + " token"],
+      ["PROMPT / AI", report.userToAiRatio === null ? "Chưa đủ dữ liệu" : report.userToAiRatio + ":1"]
+    ].forEach(([label, value]) => {
+      const metric = el("div", "metric");
+      metric.append(el("small", "", label), el("strong", "", value));
+      reportMetrics.append(metric);
+    });
+    reportCard.append(reportMetrics);
+    report.insights.forEach(insight => {
+      const row = el("div", "ledger-insight");
+      row.append(el("b", "", insight.title), el("p", "", insight.detail));
+      reportCard.append(row);
+    });
+    reportCard.append(el("p", "note", report.limitation));
+    retrospectiveNode.append(reportCard);
   });
 }
 
@@ -172,6 +196,7 @@ $("#ledger-add").addEventListener("click", () => {
       model: $("#model-name").value,
       role: $("#message-role").value,
       text: $("#ledger-text").value,
+      kind: $("#message-kind").value,
       encoding: $("#encoding").value
     });
     saveLedger(ledger);
