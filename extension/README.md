@@ -49,3 +49,20 @@ The proposal preserves the original request and adds only the clarification deta
 - Composer selectors can break when an AI provider updates its website.
 - This extension runs on supported browser pages; it does not inject into native ChatGPT desktop or mobile apps.
 - Extension actions never submit the user's message.
+
+## Update / troubleshooting the HM button
+
+When a new version is downloaded:
+
+1. Replace the old extracted repository folder with the new ZIP contents.
+2. Open `edge://extensions` or `chrome://extensions`.
+3. Click the **Reload** icon on HM Prompt Assistant.
+4. Return to `https://chatgpt.com` and press `Ctrl+R` to reload the AI page.
+5. Click inside the chat input once. HM should attach a small **HM** button beside the composer.
+6. Click the in-page HM button. The extension toolbar popup can also be used to request opening the on-page assistant.
+
+The toolbar popup is only a launcher. The actual analysis panel is rendered inside the AI chat page. If the launcher says it cannot find an input after reloading both the extension and page, the provider may have changed its composer DOM; the extension needs a selector adapter update.
+
+## ChatGPT composer detection
+
+For ChatGPT the extension tries the `#prompt-textarea` ProseMirror editor first, then role/textbox/contenteditable/textarea variants. It scores visible candidates, includes open shadow roots, and checks the last focused editor. This is best-effort because the site's DOM is not a stable public API.
