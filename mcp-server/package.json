@@ -1,6 +1,6 @@
 {
   "name": "hm-token-intelligence-mcp",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "private": true,
   "type": "module",
   "description": "HM Token Intelligence MCP app for ChatGPT with an interactive prompt analysis widget",
