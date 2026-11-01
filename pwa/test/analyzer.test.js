@@ -36,3 +36,18 @@ test("detects repeated instruction lines without deleting them", () => {
   assert.equal(cleanFormatting("Keep the original structure.\nKeep the original structure.").optimized,
     "Keep the original structure.\nKeep the original structure.");
 });
+
+test("returns an explicit breakdown of prompt structure dimensions", () => {
+  const result = analyzePrompt("Hãy phân tích báo cáo bán hàng dựa trên dữ liệu tôi gửi. Trình bày thành bảng và giữ nguyên số liệu.");
+  assert.equal(result.totalDimensions, 6);
+  assert.ok(result.dimensions.find(item => item.key === "task").found);
+  assert.ok(result.dimensions.find(item => item.key === "context").found);
+  assert.ok(result.dimensions.find(item => item.key === "output").found);
+  assert.ok(result.dimensions.find(item => item.key === "constraints").found);
+  assert.ok(result.presentDimensions >= 4);
+  assert.equal(typeof result.note, "string");
+});
+test("does not label a short direct question as missing a deliverable", () => {
+  const result = analyzePrompt("5 nhân 7 bằng bao nhiêu?");
+  assert.equal(result.issues.some(item => item.code === "output"), false);
+});
