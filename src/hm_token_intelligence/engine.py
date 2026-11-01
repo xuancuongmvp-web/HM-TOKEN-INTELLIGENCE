@@ -50,31 +50,31 @@ def optimize_text(text: str, encoding: str = "o200k_base", *, trim_trailing_whit
     result = text
     operations: list[str] = []
     if normalize_newlines:
-        new = result.replace("\\r\\n", "\\n").replace("\\r", "\\n")
+        new = result.replace("\r\n", "\n").replace("\r", "\n")
         if new != result:
             result = new
             operations.append("normalized_newlines")
     if trim_trailing_whitespace:
-        new = "\\n".join(line.rstrip() for line in result.split("\\n"))
+        new = "\n".join(line.rstrip() for line in result.split("\n"))
         if new != result:
             result = new
             operations.append("trimmed_trailing_whitespace")
     if collapse_blank_lines:
-        new = re.sub(r"\\n{3,}", "\\n\\n", result)
+        new = re.sub(r"\n{3,}", "\n\n", result)
         if new != result:
             result = new
             operations.append("collapsed_excess_blank_lines")
     if remove_exact_duplicate_lines:
         seen: set[str] = set()
         kept: list[str] = []
-        for line in result.split("\\n"):
+        for line in result.split("\n"):
             key = line.strip()
             if key and key in seen:
                 continue
             if key:
                 seen.add(key)
             kept.append(line)
-        new = "\\n".join(kept)
+        new = "\n".join(kept)
         if new != result:
             result = new
             operations.append("removed_exact_duplicate_lines")
