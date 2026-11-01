@@ -6,12 +6,16 @@ on:
       - "mcp-server/**"
       - "pwa/**"
       - "extension/**"
+      - "plugins/**"
+      - ".agents/plugins/**"
       - ".github/workflows/mcp-server.yml"
   pull_request:
     paths:
       - "mcp-server/**"
       - "pwa/**"
       - "extension/**"
+      - "plugins/**"
+      - ".agents/plugins/**"
       - ".github/workflows/mcp-server.yml"
 jobs:
   test:
@@ -31,6 +35,11 @@ jobs:
         run: npm audit --omit=dev --audit-level=high
       - name: Build deployment Docker image
         run: docker build -f mcp-server/Dockerfile -t hm-token-intelligence-mcp .
+      - name: Validate portable HM plugin package
+        run: |
+          node -e "const p=require('./plugins/hm-token-intelligence/plugin.json'); if(p.name!=='hm-token-intelligence'||!p.version||!p.description) process.exit(1)"
+          node -e "const fs=require('fs'); const s=fs.readFileSync('plugins/hm-token-intelligence/skills/hm-prompt-intelligence/SKILL.md','utf8'); if(!s.startsWith('---\\nname: hm-prompt-intelligence\\ndescription:')||!s.includes('\\n---\\n')) process.exit(1)"
+          node -e "const m=require('./.agents/plugins/marketplace.json'); if(!m.plugins||m.plugins[0].name!=='hm-token-intelligence') process.exit(1)"
       - name: Check browser extension JavaScript syntax
         run: node --check extension/content.js && node --check extension/popup.js
       - name: Run MCP tests
