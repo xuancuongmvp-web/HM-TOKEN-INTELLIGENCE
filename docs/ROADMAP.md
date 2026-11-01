@@ -21,6 +21,16 @@ HM's primary product must work independently from ChatGPT subscription level. Th
 - [ ] Calibrate quality indicators against human-reviewed examples
 - [ ] Improve semantic intent checks and actionable rewrite suggestions
 
+## 0.25 ChatGPT Plugin / Skill entrypoint
+- [x] Add portable Agent Plugin package manifest
+- [x] Add HM prompt-intelligence skill with semantic review and answer-evaluation workflows
+- [x] Add repo-scoped ChatGPT desktop plugin marketplace manifest
+- [ ] Test local marketplace discovery and explicit skill invocation in ChatGPT Desktop
+- [ ] Confirm feature eligibility and install flow across personal/workspace plans
+- [ ] Connect authenticated MCP tools for exact tokenization and deterministic analysis
+- [ ] Add interactive in-chat MCP app UI where supported
+- [ ] Publish reviewed portable plugin package to the universal directory when eligible
+
 ## 0.3 one-click cross-platform access
 - [x] Free static-site hosting Blueprint for PWA prepared
 - [ ] Deploy the PWA to a public HTTPS address
