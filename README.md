@@ -5,7 +5,7 @@ HM Token Intelligence is a local-first prompt quality and token-efficiency assis
 ## Main product
 
 - **PWA:** standalone browser app for desktop and mobile. Counts tokens with a real tokenizer, explains prompt warnings, and previews formatting cleanup. Does not require an OpenAI API key, MCP connection, or ChatGPT plan check.
-- **Chrome/Edge extension:** local hints beside the visible ChatGPT Web composer. Desktop browser only; early MVP.
+- **Browser extension (new in-composer MVP):** an HM button appears beside supported AI chat composers. It analyzes the current prompt, lets users fill missing details, creates a structured draft, and inserts it into the composer only after an explicit click. It never presses Send. Current targets: ChatGPT, Gemini, Claude, Copilot, and Perplexity Web; live DOM compatibility still needs per-site verification.
 - **Optional MCP app:** an additional route for eligible ChatGPT web workspaces. Not required for the universal PWA or extension.
 - **Python API:** developer foundation.
 
