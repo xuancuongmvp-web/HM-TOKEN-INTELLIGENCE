@@ -10,6 +10,22 @@ const PHRASES = {
   longTasks: ["tóm tắt", "phân tích", "so sánh", "trích xuất", "giữ nguyên", "không được bỏ", "summarize", "compare", "extract", "preserve", "do not omit"]
 };
 
+const CJK = {
+  vague: ["全部内容", "所有内容", "越详细越好", "尽可能详细"],
+  tasks: ["请分析", "帮我", "检查一下", "处理一下", "创建"],
+  outputs: ["表格", "清单", "步骤", "格式", "结论", "输出", "报告"],
+  references: ["这个", "那个", "如上所述", "上面提到"],
+  longTasks: ["总结", "分析", "比较", "提取", "保持原文", "不要删除"]
+};
+
+function hasCjkPhrase(text, phrases) {
+  return phrases.some(phrase => text.includes(phrase));
+}
+
+function hasAny(text, phrases, cjkPhrases) {
+  return hasPhrase(text, phrases) || hasCjkPhrase(text, cjkPhrases);
+}
+
 function hasPhrase(text, phrases) {
   const lower = text.toLocaleLowerCase();
   return phrases.some(phrase => {
@@ -41,17 +57,17 @@ export function analyzePrompt(text, encodingName = "o200k_base") {
   if (!text.trim()) {
     add("error", "empty", "Chưa có nội dung", "HM chưa nhận được prompt để phân tích.", "Dán nội dung bạn dự định gửi cho AI.");
   } else {
-    if (hasPhrase(text, PHRASES.vague))
+    if (hasAny(text, PHRASES.vague, CJK.vague))
       add("warning", "scope", "Phạm vi có thể chưa rõ", "Cụm từ bao quát chưa xác định hạng mục, giới hạn hoặc mức độ cần xử lý.", "Nêu rõ đối tượng, phạm vi, giới hạn và mức độ chi tiết.");
-    if (hasPhrase(text, PHRASES.tasks) && !hasPhrase(text, PHRASES.outputs))
+    if (hasAny(text, PHRASES.tasks, CJK.tasks) && !hasAny(text, PHRASES.outputs, CJK.outputs))
       add("warning", "output", "Chưa thấy tiêu chí đầu ra", "AI có thể hiểu nhiệm vụ nhưng chưa biết định dạng hoặc tiêu chí hoàn thành.", "Chỉ định định dạng, cấu trúc, độ dài hoặc tiêu chí nghiệm thu.");
-    if (words < 100 && hasPhrase(text, PHRASES.references))
+    if (words < 100 && hasAny(text, PHRASES.references, CJK.references))
       add("warning", "reference", "Tham chiếu có thể thiếu ngữ cảnh", "Các từ như “nó”, “cái này”, “this” hoặc “as mentioned” có thể không xác định rõ đối tượng.", "Thay đại từ bằng tên đối tượng, tài liệu hoặc đoạn nội dung cụ thể.");
     const lower = lines.map(x => x.toLocaleLowerCase());
     const duplicates = [...new Set(lower.filter((x, i) => lower.indexOf(x) !== i))];
     if (duplicates.length)
       add("warning", "duplicates", "Có dòng nội dung trùng lặp", "Phát hiện " + duplicates.length + " dòng lặp chính xác; lặp lại đôi khi có chủ ý.", "Kiểm tra từng dòng và chỉ xóa nếu không cần nhấn mạnh.");
-    if (words > 250 && !hasPhrase(text, PHRASES.longTasks))
+    if (words > 250 && !hasAny(text, PHRASES.longTasks, CJK.longTasks))
       add("info", "long", "Prompt tương đối dài", "Độ dài không tự động là lãng phí, nhưng có thể có phần không phục vụ trực tiếp mục tiêu.", "Chia thành bối cảnh, nhiệm vụ, ràng buộc và đầu ra; chỉ bỏ phần thật sự không cần.");
     if (/(.)\1{7,}/u.test(text))
       add("info", "characters", "Chuỗi ký tự lặp bất thường", "Có chuỗi ký tự lặp liên tiếp có thể do dán nhầm.", "Kiểm tra đoạn ký tự được lặp.");
