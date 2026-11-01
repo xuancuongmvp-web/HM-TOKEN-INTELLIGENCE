@@ -39,3 +39,13 @@ footer{padding:25px 0 36px;color:#8492a8;font-size:11px;line-height:1.6}footer>b
 .ledger-breakdown{font-size:11px;color:#d8c59f;margin:12px 0 7px}
 .ledger-model{display:inline-block;margin:3px 10px 0 0}
 @media(max-width:640px){.ledger-form{grid-template-columns:1fr}.ledger-summary{grid-template-columns:repeat(2,minmax(0,1fr))}.ledger-project-head{align-items:flex-start}}
+
+.ledger-retrospective{margin-top:16px}
+.ledger-report{background:#111d30;border:1px solid #665333;border-radius:12px;padding:16px;margin:12px 0}
+.ledger-report h3{font-size:13px;color:#e5c987;margin:0 0 12px}
+.ledger-report-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+.ledger-report-metrics .metric strong{font-size:15px}
+.ledger-insight{padding:10px 0;border-top:1px solid #2a3a51}
+.ledger-insight b{font-size:11px;color:#d9e2ee}
+.ledger-insight p{font-size:10px;color:#95a4b9;line-height:1.55;margin:5px 0 0}
+@media(max-width:640px){.ledger-report-metrics{grid-template-columns:1fr}}
