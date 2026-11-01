@@ -55,6 +55,9 @@
 
     const selectors = [
       "#prompt-textarea",
+      '#prompt-textarea[contenteditable="true"]',
+      'div.ProseMirror[contenteditable="true"]',
+      'textarea[name="prompt-textarea"]',
       '[data-testid="prompt-textarea"]',
       '[data-testid="composer"] [contenteditable="true"]',
       '[data-testid*="composer"] [contenteditable="true"]',
@@ -71,6 +74,18 @@
     for (const root of roots) {
       for (const selector of selectors) {
         try { root.querySelectorAll(selector).forEach(el => candidates.add(el)); } catch { /* invalid selector in unusual host */ }
+      }
+
+      // When the toolbar popup steals focus, the page may still retain the
+      // last focused composer as activeElement. Include it as a candidate.
+      let active = root.activeElement;
+      if (active && active !== root.body && active !== root.documentElement) {
+        candidates.add(active);
+        let parent = active;
+        while (parent && parent.parentElement) {
+          parent = parent.parentElement;
+          if (parent.matches?.('[contenteditable]:not([contenteditable="false"]),[role="textbox"],textarea')) candidates.add(parent);
+        }
       }
     }
 
