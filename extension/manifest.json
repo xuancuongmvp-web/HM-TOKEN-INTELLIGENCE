@@ -1,9 +1,8 @@
 {
   "manifest_version": 3,
   "name": "HM Prompt Monitor",
-  "version": "0.1.0",
-  "description": "Local, on-page prompt quality and token-efficiency hints for ChatGPT.",
-  "permissions": ["storage"],
+  "version": "0.2.0",
+  "description": "Local prompt-quality hints for ChatGPT Web, independent of ChatGPT subscription tier.",
   "host_permissions": ["https://chatgpt.com/*", "https://chat.openai.com/*"],
   "action": {
     "default_title": "Analyze current ChatGPT prompt",
