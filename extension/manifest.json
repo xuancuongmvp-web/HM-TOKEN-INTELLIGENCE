@@ -1,15 +1,29 @@
 {
   "manifest_version": 3,
-  "name": "HM Prompt Monitor",
-  "version": "0.2.0",
-  "description": "Local prompt-quality hints for ChatGPT Web, independent of ChatGPT subscription tier.",
-  "host_permissions": ["https://chatgpt.com/*", "https://chat.openai.com/*"],
+  "name": "HM Prompt Assistant",
+  "version": "0.3.0",
+  "description": "An on-page prompt analyzer and user-approved prompt improver for AI chat composers.",
+  "host_permissions": [
+    "https://chatgpt.com/*",
+    "https://chat.openai.com/*",
+    "https://gemini.google.com/*",
+    "https://claude.ai/*",
+    "https://copilot.microsoft.com/*",
+    "https://www.perplexity.ai/*"
+  ],
   "action": {
-    "default_title": "Analyze current ChatGPT prompt",
+    "default_title": "Open HM Prompt Assistant",
     "default_popup": "popup.html"
   },
   "content_scripts": [{
-    "matches": ["https://chatgpt.com/*", "https://chat.openai.com/*"],
+    "matches": [
+      "https://chatgpt.com/*",
+      "https://chat.openai.com/*",
+      "https://gemini.google.com/*",
+      "https://claude.ai/*",
+      "https://copilot.microsoft.com/*",
+      "https://www.perplexity.ai/*"
+    ],
     "js": ["content.js"],
     "css": ["styles.css"],
     "run_at": "document_idle"
