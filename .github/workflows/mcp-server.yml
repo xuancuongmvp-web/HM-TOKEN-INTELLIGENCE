@@ -29,6 +29,8 @@ jobs:
         run: npm audit --omit=dev --audit-level=high
       - name: Build deployment Docker image
         run: docker build -f mcp-server/Dockerfile -t hm-token-intelligence-mcp .
+      - name: Check browser extension JavaScript syntax
+        run: node --check extension/content.js
       - name: Run MCP tests
         working-directory: mcp-server
         run: npm test
