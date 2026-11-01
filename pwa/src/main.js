@@ -1,5 +1,5 @@
 import { analyzePrompt, cleanFormatting } from "./analyzer.js";
-import { addUsageEntry, summarizeEntries, buildProjectReport, exportProjectReportCSV, loadLedger, saveLedger, exportLedger, removeProject } from "./project-ledger.js";
+import { addUsageEntry, summarizeEntries, buildProjectReport, exportProjectReportCSV, parseLedgerImport, loadLedger, saveLedger, exportLedger, removeProject } from "./project-ledger.js";
 import "./style.css";
 const $ = selector => document.querySelector(selector);
 const input = $("#prompt");
@@ -232,6 +232,24 @@ $("#ledger-export").addEventListener("click", () => {
   link.click();
   URL.revokeObjectURL(url);
   $("#ledger-status").textContent = "Đã xuất báo cáo thống kê. File không chứa nội dung tin nhắn.";
+});
+
+$("#ledger-import-trigger").addEventListener("click", () => $("#ledger-import-file").click());
+$("#ledger-import-file").addEventListener("change", async event => {
+  const file = event.target.files?.[0];
+  if (!file) return;
+  try {
+    const restored = parseLedgerImport(await file.text());
+    if (!confirm("Khôi phục " + restored.projects.length + " dự án từ file? Dữ liệu theo dõi hiện tại trên trình duyệt sẽ được thay thế.")) return;
+    ledger.projects = restored.projects;
+    saveLedger(ledger);
+    renderLedger();
+    $("#ledger-status").textContent = "Đã khôi phục " + ledger.projects.length + " dự án từ bản sao lưu.";
+  } catch (error) {
+    $("#ledger-status").textContent = "Không thể khôi phục: " + error.message;
+  } finally {
+    event.target.value = "";
+  }
 });
 
 $("#ledger-clear").addEventListener("click", () => {
