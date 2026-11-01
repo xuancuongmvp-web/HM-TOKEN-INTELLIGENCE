@@ -1,4 +1,4 @@
-name: MCP server checks
+name: HM Node project checks
 on:
   push:
     branches: [main]
