@@ -109,7 +109,7 @@ export function analyzePrompt(text, encodingName = "o200k_base") {
     if ((isAnalytical || (isCreation && words > 25)) && !detected.context) {
       add("warning", "context", "Thiếu dấu hiệu về bối cảnh hoặc dữ liệu đầu vào", "Với yêu cầu phân tích/đánh giá hoặc tạo nội dung theo tình huống cụ thể, HM chưa thấy nguồn dữ liệu, hiện trạng hay bối cảnh được nêu trong prompt.", "Bổ sung tài liệu, dữ kiện, đối tượng, tình trạng hiện tại hoặc nói rõ AI chỉ được dùng thông tin nào.");
     }
-    if (isCreation && !detected.output) {
+    if ((isCreation || isAnalytical) && !detected.output) {
       add("warning", "output", "Chưa mô tả rõ sản phẩm đầu ra", "Yêu cầu tạo nội dung nhưng chưa xác định rõ muốn nhận loại sản phẩm hoặc cấu trúc nào.", "Nêu loại đầu ra: email, báo cáo, bảng, checklist, bản dịch, mã nguồn, tệp hoặc dàn ý.");
     }
     if (detected.task && !detected.constraints && (isAnalytical || isCreation) && words > 20) {
