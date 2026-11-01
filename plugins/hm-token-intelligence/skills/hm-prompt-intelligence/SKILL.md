@@ -1,6 +1,6 @@
 ---
 name: hm-prompt-intelligence
-description: Review, diagnose, optimize, or evaluate AI prompts when the user asks for prompt improvement, token efficiency, ambiguity detection, prompt QA, or answer-quality review. Invoke explicitly with @HM or when a user asks HM to check a prompt before sending. Preserve intent; never silently rewrite or submit.
+description: Review, diagnose, optimize, or evaluate AI prompts when the user asks for prompt improvement, token efficiency, ambiguity detection, prompt QA, or answer-quality review. Invoke explicitly with @hm-prompt-intelligence or use when a user asks HM to check a prompt before sending. Preserve intent; never silently rewrite or submit.
 ---
 
 # HM Prompt Intelligence
