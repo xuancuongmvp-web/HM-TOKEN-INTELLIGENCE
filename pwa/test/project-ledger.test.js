@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { addUsageEntry, createProjectLedger, summarizeEntries, removeProject, exportLedger, loadLedger, saveLedger, LEDGER_STORAGE_KEY } from "../src/project-ledger.js";
+import { addUsageEntry, createProjectLedger, summarizeEntries, buildProjectReport, removeProject, exportLedger, loadLedger, saveLedger, LEDGER_STORAGE_KEY } from "../src/project-ledger.js";
 
 test("records exact supplied message tokens without retaining message content", () => {
   const ledger = createProjectLedger();
@@ -56,4 +56,26 @@ test("prevents mixing tokenizer encodings inside one project", () => {
   const ledger = createProjectLedger();
   addUsageEntry(ledger, { projectName: "Consistent", role: "user", text: "A", encoding: "o200k_base" });
   assert.throws(() => addUsageEntry(ledger, { projectName: "Consistent", role: "assistant", text: "B", encoding: "cl100k_base" }), /giữ cùng encoding/);
+});
+
+test("builds a project retrospective with manually tagged rework and clarification", () => {
+  const ledger = createProjectLedger();
+  addUsageEntry(ledger, { projectName: "Retro", conversationName: "Design", role: "user", kind: "normal", text: "Create the design brief" });
+  addUsageEntry(ledger, { projectName: "Retro", conversationName: "Design", role: "assistant", kind: "normal", text: "Here is the design brief" });
+  addUsageEntry(ledger, { projectName: "Retro", conversationName: "Design", role: "user", kind: "rework", text: "Please redo the layout" });
+  addUsageEntry(ledger, { projectName: "Retro", conversationName: "Review", role: "user", kind: "clarification", text: "Clarify the dimensions" });
+  const report = buildProjectReport(ledger.projects[0]);
+  assert.equal(report.conversations.length, 2);
+  assert.ok(report.reworkTokens > 0);
+  assert.equal(report.reworkEntries, 1);
+  assert.ok(report.clarificationTokens > 0);
+  assert.equal(report.topConversation.name, "Design");
+  assert.ok(report.limitation.includes("usage/billing"));
+});
+
+test("counts words by whitespace and records no pasted text", () => {
+  const ledger = createProjectLedger();
+  const { entry } = addUsageEntry(ledger, { projectName: "Words", role: "user", text: "one two\\nthree" });
+  assert.equal(entry.words, 3);
+  assert.equal(Object.hasOwn(entry, "text"), false);
 });
