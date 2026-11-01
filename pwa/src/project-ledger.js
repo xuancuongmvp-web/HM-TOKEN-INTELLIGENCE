@@ -93,7 +93,7 @@ export function exportProjectReportCSV(project) {
   ];
   const escape = value => {
     let text = String(value ?? "");
-    if (/^[=+@\\-\\t\\r]/u.test(text)) text = "'" + text;
+    if (["=", "+", "-", "@", "\t", "\r"].includes(text[0])) text = "'" + text;
     return '"' + text.replace(/"/gu, '""') + '"';
   };
   return "\uFEFF" + rows.map(row => row.map(escape).join(",")).join("\r\n");
