@@ -1,7 +1,7 @@
 import { createServer } from "node:http";
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
-import { dirname, join } from "node:path";
+import { dirname, join, resolve } from "node:path";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
 import { registerAppResource, registerAppTool, RESOURCE_MIME_TYPE } from "@modelcontextprotocol/ext-apps/server";
