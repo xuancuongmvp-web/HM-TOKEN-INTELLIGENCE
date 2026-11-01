@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "HM Prompt Assistant",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "description": "An on-page prompt analyzer and user-approved prompt improver for AI chat composers.",
   "host_permissions": [
     "https://chatgpt.com/*",
