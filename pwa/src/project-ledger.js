@@ -27,7 +27,7 @@ export function addUsageEntry(ledger, { projectName, conversationName = "Cuộc 
     id: globalThis.crypto?.randomUUID?.() || `entry-${Date.now()}-${Math.random().toString(16).slice(2)}`,
     conversationName: String(conversationName || "Cuộc trò chuyện").trim() || "Cuộc trò chuyện",
     role, kind, model: String(model || "").trim(), encoding, tokens,
-    characters: content.length, words: content.trim().split(/\\s+/u).length,
+    characters: content.length, words: content.trim().split(/\s+/u).length,
     date
   };
   project.entries.push(entry);
