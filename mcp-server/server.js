@@ -1,4 +1,5 @@
 import { createServer } from "node:http";
+import { timingSafeEqual } from "node:crypto";
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join, resolve } from "node:path";
@@ -171,7 +172,7 @@ function createMcpServer() {
   }, async ({ original, revised, encoding = "o200k_base" }) => {
     const result = comparePrompts(original, revised, encoding);
     return {
-      content: [{ type: "text", text: `HM comparison (${encoding}): original ${originalTokens}, revised ${revisedTokens}, difference ${saved} tokens (${result.reduction_percent}%). Semantic equivalence has not been established by the tokenizer.` }],
+      content: [{ type: "text", text: `HM comparison (${encoding}): original ${result.original_tokens}, revised ${result.revised_tokens}, difference ${result.tokens_saved} tokens (${result.reduction_percent}%). Semantic equivalence has not been established by the tokenizer.` }],
       structuredContent: result
     };
   });
@@ -213,7 +214,7 @@ const httpServer = createServer(async (req, res) => {
     return;
   }
   if (req.method === "OPTIONS" && url.pathname === MCP_PATH) {
-    res.writeHead(204, { "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Methods": "POST, GET, OPTIONS", "Access-Control-Allow-Headers": "content-type, mcp-session-id", "Access-Control-Expose-Headers": "Mcp-Session-Id" }).end();
+    res.writeHead(204, { "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Methods": "POST, GET, OPTIONS", "Access-Control-Allow-Headers": "authorization, content-type, mcp-session-id", "Access-Control-Expose-Headers": "Mcp-Session-Id" }).end();
     return;
   }
   if (url.pathname === MCP_PATH && ["POST", "GET", "DELETE"].includes(req.method || "")) {
@@ -239,7 +240,7 @@ const httpServer = createServer(async (req, res) => {
   res.writeHead(404).end("Not Found");
 });
 if (process.argv[1] && fileURLToPath(import.meta.url) === resolve(process.argv[1])) {
-  httpServer.listen(PORT, "0.0.0.0", () => console.log(`HM Token Intelligence MCP listening on port ${PORT} at ${MCP_PATH}`));
+  if (process.env.NODE_ENV === "production" && !process.env.HM_MCP_API_TOKEN) {\n    throw new Error("Refusing to start HM MCP in production without HM_MCP_API_TOKEN.");\n  }\n  httpServer.listen(PORT, process.env.HOST || "0.0.0.0", () => console.log(`HM Token Intelligence MCP listening on port ${PORT} at ${MCP_PATH}`));
 }
 
 export { analyzePrompt, optimizePrompt, countTokens, comparePrompts, createRateLimiter };
