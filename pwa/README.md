@@ -51,6 +51,20 @@ Accuracy boundary:
 - Provider billing may differ because models may use different tokenizers and may count cached input, reasoning, tool, image, audio, and video tokens differently.
 - For a provider's actual usage, import or manually enter official usage metadata separately; do not mix it with tokenizer-derived estimates.
 
+## Optional project / conversation token ledger
+
+Open **Theo dõi token dự án (tùy chọn)** to create a local usage record. Enter a project name, conversation name, model label, role (user prompt, AI response, system instruction, or combined transcript), and interaction purpose (normal, clarification, revision, or rework). Paste one message or a transcript segment and select **Ghi nhận token**.
+
+The retrospective summarizes total tokens, prompt and AI-response tokens, per-conversation totals, per-model totals, manually tagged clarification/revision/rework tokens, and the conversation with the highest recorded token count. Export the full metadata ledger as JSON or an individual project retrospective as CSV.
+
+- The feature is opt-in. Only text explicitly submitted with the record button is counted.
+- It stores token counts and metadata, never the pasted message content.
+- Data remains in this browser's local storage and is not synced across devices.
+- Keep the same tokenizer encoding within a project. Different encodings are not added into a single misleading total.
+- Avoid double-counting: record individual messages or one combined transcript per conversation, not both.
+- Rework and clarification labels are manually selected indicators, not proof that the prompt caused the rework.
+- Counts are exact only for the text supplied to HM. They are not provider billing totals and do not include hidden context, tool payloads, caching, or multimodal content.
+
 ## Accuracy and privacy
 
 - Token counts are exact for the supplied text and selected encoding, not for the full ChatGPT turn.
