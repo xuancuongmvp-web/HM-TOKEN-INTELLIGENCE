@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { addUsageEntry, createProjectLedger, summarizeEntries, buildProjectReport, exportProjectReportCSV, removeProject, exportLedger, loadLedger, saveLedger, LEDGER_STORAGE_KEY } from "../src/project-ledger.js";
+import { addUsageEntry, createProjectLedger, summarizeEntries, buildProjectReport, exportProjectReportCSV, parseLedgerImport, removeProject, exportLedger, loadLedger, saveLedger, LEDGER_STORAGE_KEY } from "../src/project-ledger.js";
 
 test("records exact supplied message tokens without retaining message content", () => {
   const ledger = createProjectLedger();
@@ -88,4 +88,28 @@ test("exports a CSV retrospective with project, conversation and model totals", 
   assert.match(csv, /total_tokens/);
   assert.match(csv, /conversation:Planning/);
   assert.match(csv, /model:GPT/);
+});
+
+test("restores exported metadata and strips any message text fields", () => {
+  const raw = JSON.stringify({ version: 1, projects: [{
+    id: "p1", name: "Restore", encoding: "o200k_base", entries: [{
+      id: "e1", conversationName: "Chat", role: "user", kind: "normal", model: "GPT",
+      encoding: "o200k_base", tokens: 12, characters: 30, words: 5, date: "2026-11-01",
+      text: "must not be retained"
+    }]
+  }]});
+  const restored = parseLedgerImport(raw);
+  assert.equal(restored.projects[0].entries[0].tokens, 12);
+  assert.equal(Object.hasOwn(restored.projects[0].entries[0], "text"), false);
+  assert.throws(() => parseLedgerImport(JSON.stringify({ version: 2, projects: [] })));
+});
+
+test("rejects imported project with mixed encodings", () => {
+  const raw = JSON.stringify({ version: 1, projects: [{
+    name: "Mixed", entries: [
+      { role: "user", encoding: "o200k_base", tokens: 1 },
+      { role: "assistant", encoding: "cl100k_base", tokens: 2 }
+    ]
+  }]});
+  assert.throws(() => parseLedgerImport(raw), /nhiều encoding/);
 });
