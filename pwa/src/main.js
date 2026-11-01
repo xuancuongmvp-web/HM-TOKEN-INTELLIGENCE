@@ -1,5 +1,5 @@
 import { analyzePrompt, cleanFormatting } from "./analyzer.js";
-import { addUsageEntry, summarizeEntries, buildProjectReport, loadLedger, saveLedger, exportLedger, removeProject } from "./project-ledger.js";
+import { addUsageEntry, summarizeEntries, buildProjectReport, exportProjectReportCSV, loadLedger, saveLedger, exportLedger, removeProject } from "./project-ledger.js";
 import "./style.css";
 const $ = selector => document.querySelector(selector);
 const input = $("#prompt");
@@ -184,6 +184,20 @@ function renderLedger() {
       reportCard.append(row);
     });
     reportCard.append(el("p", "note", report.limitation));
+    const reportActions = el("div", "actions");
+    const csvButton = el("button", "secondary", "Xuất báo cáo dự án CSV");
+    csvButton.type = "button";
+    csvButton.addEventListener("click", () => {
+      const blob = new Blob([exportProjectReportCSV(project)], { type: "text/csv;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const link = el("a");
+      link.href = url;
+      link.download = "hm-project-report.csv";
+      link.click();
+      URL.revokeObjectURL(url);
+    });
+    reportActions.append(csvButton);
+    reportCard.append(reportActions);
     retrospectiveNode.append(reportCard);
   });
 }
