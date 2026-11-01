@@ -114,7 +114,9 @@ export function parseLedgerImport(raw) {
     });
     const encodings = [...new Set(entries.map(entry => entry.encoding))];
     if (encodings.length > 1) throw new Error("File chứa dự án dùng nhiều encoding; hãy tách dự án trước khi nhập.");
-    return { id: String(project.id || ""), name: project.name.trim(), encoding: project.encoding || encodings[0] || "o200k_base", createdAt: String(project.createdAt || ""), entries };
+    const encoding = project.encoding || encodings[0] || "o200k_base";
+    if (!ENCODINGS.includes(encoding) || (encodings.length && encodings[0] !== encoding)) throw new Error("Encoding dự án trong file không nhất quán.");
+    return { id: String(project.id || ("import-" + Date.now() + "-" + Math.random().toString(16).slice(2))), name: project.name.trim(), encoding, createdAt: String(project.createdAt || ""), entries };
   });
   return { version: 1, projects };
 }
