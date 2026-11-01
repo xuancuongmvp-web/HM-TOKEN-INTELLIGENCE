@@ -1,24 +1,26 @@
 # HM Token Intelligence
 
-**HM Token Intelligence** is an open-source prompt quality and token-efficiency project. Its core purpose is to help people see why a prompt may waste tokens or produce weak results, understand the problem, and choose how to improve it. It must never silently rewrite or submit a user's prompt.
+**HM Token Intelligence** is an open-source prompt quality and token-efficiency project. Its purpose is to help people see why a prompt may waste tokens or produce weak results, understand the problem, and choose how to improve it. It must never silently rewrite or submit a user's prompt.
 
-> **Important product status (1 Nov 2026):** This repository contains an experimental local web/API foundation and an early Chrome/Edge extension. It is **not yet a published ChatGPT app**, does **not** currently integrate directly into the native ChatGPT Desktop or mobile composer, and is **not yet hosted as a public service**.
+> **Project status (1 Nov 2026):** The repository contains a local Python web/API foundation, an early Chrome/Edge extension, and an experimental ChatGPT MCP server/widget. A free-tier Render Blueprint is prepared, but no hosted service has been deployed and no ChatGPT account has completed a connection test. This is not a released production app.
 
-## What exists now
+## What exists
 
 - Token counting for text explicitly supplied to the API with a selected `tiktoken` encoding.
-- Conservative, mechanical text cleanup preview.
+- Conservative, mechanical text-cleanup preview.
 - FastAPI web interface and API.
-- Early Chrome/Edge extension MVP that analyzes visible text in the ChatGPT browser composer using local heuristics.
+- Early Chrome/Edge extension MVP that analyzes visible ChatGPT Web composer text using local heuristics.
+- Experimental MCP server with `analyze_prompt` and `optimize_prompt_formatting` tools plus an interactive widget.
+- Root-level Render Blueprint configured for a Free pilot in Singapore.
 - Platform support notes in [docs/PLATFORM_SUPPORT.md](docs/PLATFORM_SUPPORT.md).
 
-The extension's token figure is a rough estimate based on visible text length, not an exact tokenizer count. Its warnings are heuristic suggestions, not a guarantee of answer quality.
+The extension's token figure is a rough estimate based on visible text length, not an exact tokenizer count. Warnings are heuristic signals, not guarantees of answer quality.
 
-## Choose how to use the current development build
+## Current ways to use the development build
 
-### A. Local web/API development (Windows)
+### A. Local Python web/API development (Windows)
 
-These instructions are for developers testing the current source code on their own computer. They do **not** install HM inside ChatGPT.
+These instructions are for developers testing the source on their own computer. They do **not** install HM inside ChatGPT.
 
 1. Install Python 3.10 or newer.
 2. Open PowerShell in the project folder.
@@ -32,7 +34,7 @@ pip install -e ".[dev]"
 hm-token
 ```
 
-4. For local testing only, open **http://127.0.0.1:8000** in your browser.
+4. Open **http://127.0.0.1:8000** for local testing.
 
 If PowerShell blocks environment activation:
 
@@ -41,9 +43,9 @@ If PowerShell blocks environment activation:
 .\.venv\Scripts\python.exe -m hm_token_intelligence.app
 ```
 
-The address `http://127.0.0.1:8000` is a loopback address available only on your own computer. It is not a public link and cannot be used by ChatGPT's hosted app connection.
+The address `http://127.0.0.1:8000` is only available on your own computer. ChatGPT's hosted app connection cannot use it.
 
-### B. Current Chrome/Edge extension MVP
+### B. Chrome/Edge extension MVP
 
 1. Download the repository ZIP and extract it.
 2. Open `chrome://extensions` in Chrome or `edge://extensions` in Edge.
@@ -51,19 +53,19 @@ The address `http://127.0.0.1:8000` is a loopback address available only on your
 4. Select **Load unpacked** and choose the repository's `extension` folder.
 5. Open or reload ChatGPT in that browser.
 
-The extension can show heuristic warnings while typing in the browser composer. It is an early developer build and has not yet been verified across all ChatGPT page layouts. It does not run inside the native ChatGPT Desktop application or the ChatGPT phone apps.
+The extension can show heuristic warnings while typing in the browser composer. It is an early developer build and has not been verified across all ChatGPT page layouts. It does not run inside the native ChatGPT Desktop or phone apps.
 
-### C. Direct ChatGPT app integration (not released yet)
+### C. Direct ChatGPT MCP integration (experimental)
 
-The intended in-ChatGPT experience is an **Apps SDK + remote MCP app**, with an interactive analysis UI. This requires a deployed, stable HTTPS MCP endpoint, implementation of the MCP server and app UI, privacy/security review, and the applicable ChatGPT account/workspace permissions.
+The MCP server and widget are in [mcp-server](mcp-server/README.md). The root [render.yaml](render.yaml) prepares one Render Free web service in Singapore. Deployment still requires the repository owner to connect a Render account, review the free-tier terms, and apply the Blueprint. No live endpoint currently exists.
 
-The local address `http://127.0.0.1:8000` is not sufficient. A public deployment and ChatGPT connection setup are still outstanding. See [OpenAI's Apps SDK guide](https://help.openai.com/en/articles/12515353-building-with-the-apps-sdk) and [custom MCP connection guide](https://help.openai.com/en/articles/12584461-connecting-custom-mcp-servers-in-chatgpt).
+**OpenAI plan/client eligibility:** OpenAI currently documents full custom MCP support for ChatGPT Business and Enterprise/Edu on the web. Pro users are limited to read/fetch permissions. The current Help Center says custom MCP connections are not supported on mobile. Go and Free are not listed as eligible for full custom MCP. Check the current [OpenAI connection guide](https://help.openai.com/en/articles/12584461-connecting-custom-mcp-servers-in-chatgpt) and workspace permissions before proceeding.
 
-**Current platform limitation:** OpenAI's current custom MCP connection guide says custom MCP servers can be connected in ChatGPT on the web and explicitly says mobile connections are not supported. Do not assume that an app connected on the web will appear in the native Windows/macOS or iOS/Android ChatGPT apps. Until OpenAI enables those clients, the practical fallbacks are the browser extension for ChatGPT in Chrome/Edge and a mobile-friendly HM companion web app/PWA.
+The pilot uses no authentication, so its endpoint is public and must not receive sensitive or confidential prompts. It has a bounded request body and process-wide rate budget but is not production-secure. Read [ChatGPT setup](docs/CHATGPT_SETUP.md) before deployment.
 
-### D. Mobile companion (planned, not released)
+### D. Mobile companion (planned)
 
-A responsive, installable HM web app/PWA will let users paste or share prompt text into HM, see token and quality analysis, and copy an improved version back to ChatGPT. This is a companion workflow, **not** a live overlay inside the native ChatGPT mobile app.
+A responsive, installable HM PWA is planned for pasting/sharing prompt text, analyzing it, and copying a user-approved revision back to ChatGPT. It is a companion workflow, not a live overlay inside the native ChatGPT mobile app.
 
 ## Accuracy and privacy boundaries
 
@@ -73,21 +75,6 @@ A responsive, installable HM web app/PWA will let users paste or share prompt te
 - The browser extension analyzes visible composer text locally; it does not need to send prompt text to a server.
 - Warnings are indicators for user review, not definitive proof that a prompt will fail.
 - HM must explain potential waste and suggest improvements, but the user remains in control. Never auto-edit or auto-submit.
-
-## Direct ChatGPT integration (MCP App)
-
-An initial ChatGPT-compatible MCP server and interactive prompt inspector now live in [mcp-server](mcp-server/README.md). It exposes `analyze_prompt` and `optimize_prompt_formatting` and uses a real tokenizer for the text explicitly supplied to it.
-
-**This is implementation code, not a live installation.** The server still needs to be deployed to a stable HTTPS host and tested through ChatGPT's custom app connection flow. See [ChatGPT setup](docs/CHATGPT_SETUP.md). The native ChatGPT composer is not automatically monitored by MCP.
-
-## API
-
-- `GET /health`
-- `GET /v1/encodings`
-- `POST /v1/count`
-- `POST /v1/optimize`
-
-Interactive API documentation in local development is available at `http://127.0.0.1:8000/docs`.
 
 ## Core product principles
 
@@ -99,6 +86,6 @@ Interactive API documentation in local development is available at `http://127.0
 6. Evaluate whether the response achieved the user's stated goal and identify avoidable rework where measurable.
 7. Clearly distinguish exact counts, estimates, and inferred savings.
 
-## Development roadmap
+## Roadmap
 
 See [docs/ROADMAP.md](docs/ROADMAP.md) and [docs/PLATFORM_SUPPORT.md](docs/PLATFORM_SUPPORT.md).
