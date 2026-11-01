@@ -15,6 +15,8 @@ def test_unknown_encoding_rejected():
     assert response.status_code == 400
 
 def test_optimizer_preview():
-    body = client.post("/v1/optimize", json={"text": "a\\n\\n\\nb"}).json()
+    source = "a\n\n\nb"
+    body = client.post("/v1/optimize", json={"text": source}).json()
     assert body["review_required"] is True
-    assert body["original"] == "a\\n\\n\\nb"
+    assert body["original"] == source
+    assert body["optimized"] == "a\n\nb"
