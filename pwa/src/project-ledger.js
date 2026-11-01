@@ -20,7 +20,8 @@ export function addUsageEntry(ledger, { projectName, conversationName = "Cuộc 
     ledger.projects.push(project);
   }
   if (project.encoding && project.encoding !== encoding) throw new Error(`Dự án này đang dùng ${project.encoding}. Hãy giữ cùng encoding để tổng token có thể so sánh chính xác.`);
-  project.encoding = project.encoding || encoding;\n  const tokens = countTokens(content, encoding);
+  project.encoding = project.encoding || encoding;
+  const tokens = countTokens(content, encoding);
   const entry = {
     id: globalThis.crypto?.randomUUID?.() || `entry-${Date.now()}-${Math.random().toString(16).slice(2)}`,
     conversationName: String(conversationName || "Cuộc trò chuyện").trim() || "Cuộc trò chuyện",
