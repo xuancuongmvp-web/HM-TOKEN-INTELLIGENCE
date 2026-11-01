@@ -116,7 +116,7 @@ function optimizePrompt(text) {
 
 function createMcpServer() {
   const server = new McpServer(
-    { name: "hm-token-intelligence", version: "0.2.0" },
+    { name: "hm-token-intelligence", version: "0.3.1" },
     { instructions: "HM Token Intelligence helps users detect prompt ambiguity, missing output criteria, repetition and unnecessary verbosity. Explain each finding plainly, protect the user's intended outcome, and never claim access to hidden ChatGPT context. Token counts cover only supplied text and the selected encoding. Never rewrite or submit a prompt without explicit user approval." }
   );
 
@@ -206,7 +206,7 @@ const httpServer = createServer(async (req, res) => {
   if (!req.url) return res.writeHead(400).end("Missing URL");
   const url = new URL(req.url, `http://${req.headers.host || "localhost"}`);
   if (req.method === "GET" && url.pathname === "/") {
-    res.writeHead(200, { "content-type": "application/json" }).end(JSON.stringify({ name: "HM Token Intelligence MCP", status: "ok", endpoint: MCP_PATH, version: "0.2.0" }));
+    res.writeHead(200, { "content-type": "application/json" }).end(JSON.stringify({ name: "HM Token Intelligence MCP", status: "ok", endpoint: MCP_PATH, version: "0.3.1" }));
     return;
   }
   if (req.method === "GET" && url.pathname === "/health") {
@@ -218,6 +218,21 @@ const httpServer = createServer(async (req, res) => {
     return;
   }
   if (url.pathname === MCP_PATH && ["POST", "GET", "DELETE"].includes(req.method || "")) {
+    const configuredToken = process.env.HM_MCP_API_TOKEN || "";
+    if (process.env.NODE_ENV === "production" && !configuredToken) {
+      res.writeHead(503, { "content-type": "application/json" }).end(JSON.stringify({ error: "MCP authentication is not configured." }));
+      return;
+    }
+    if (configuredToken) {
+      const supplied = (req.headers.authorization || "").replace(/^Bearer\s+/i, "");
+      const expectedBuffer = Buffer.from(configuredToken);
+      const suppliedBuffer = Buffer.from(supplied);
+      const valid = suppliedBuffer.length === expectedBuffer.length && timingSafeEqual(suppliedBuffer, expectedBuffer);
+      if (!valid) {
+        res.writeHead(401, { "content-type": "application/json", "www-authenticate": "Bearer" }).end(JSON.stringify({ error: "Unauthorized" }));
+        return;
+      }
+    }
     if (isRateLimited()) {
       res.writeHead(429, { "content-type": "application/json", "retry-after": "60" })
         .end(JSON.stringify({ error: "Rate limit exceeded. Retry in 60 seconds." }));
@@ -240,7 +255,9 @@ const httpServer = createServer(async (req, res) => {
   res.writeHead(404).end("Not Found");
 });
 if (process.argv[1] && fileURLToPath(import.meta.url) === resolve(process.argv[1])) {
-  if (process.env.NODE_ENV === "production" && !process.env.HM_MCP_API_TOKEN) {\n    throw new Error("Refusing to start HM MCP in production without HM_MCP_API_TOKEN.");\n  }\n  httpServer.listen(PORT, process.env.HOST || "0.0.0.0", () => console.log(`HM Token Intelligence MCP listening on port ${PORT} at ${MCP_PATH}`));
+  if (process.env.NODE_ENV === "production" && !process.env.HM_MCP_API_TOKEN) {
+    throw new Error("Refusing to start HM MCP in production without HM_MCP_API_TOKEN.");
+  }\n  httpServer.listen(PORT, process.env.HOST || "0.0.0.0", () => console.log(`HM Token Intelligence MCP listening on port ${PORT} at ${MCP_PATH}`));
 }
 
 export { analyzePrompt, optimizePrompt, countTokens, comparePrompts, createRateLimiter };
