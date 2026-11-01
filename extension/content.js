@@ -132,8 +132,64 @@
   }
   function readComposer(el = STATE.composer) {
     if (!el) return "";
-    if (el instanceof HTMLTextAreaElement || el instanceof HTMLInputElement) return el.value.trim();
-    return (el.innerText || el.textContent || "").trim();
+    if (el.tagName === "TEXTAREA" || el.tagName === "INPUT") return String(el.value || "").trim();
+    const visibleText = typeof el.innerText === "string" ? el.innerText : "";
+    const text = visibleText || el.textContent || "";
+    return String(text).replace(/\\u00a0/gu, " ").trim();
+  }
+
+  function isEditableNode(el) {
+    if (!el || el.nodeType !== 1 || el.closest?.("#hm-inline-panel")) return false;
+    const tag = el.tagName;
+    const editable = el.isContentEditable ||
+      el.getAttribute("contenteditable") === "true" ||
+      el.getAttribute("contenteditable") === "plaintext-only" ||
+      el.getAttribute("role") === "textbox" ||
+      el.getAttribute("aria-multiline") === "true" ||
+      tag === "TEXTAREA" ||
+      (tag === "INPUT" && ["text","search",""].includes(el.type)) ||
+      el.hasAttribute("data-lexical-editor") ||
+      el.hasAttribute("data-slate-editor");
+    if (!editable || el.disabled || el.readOnly) return false;
+    const rect = el.getBoundingClientRect();
+    const view = el.ownerDocument?.defaultView;
+    if (!rect.width || !rect.height || !view) return false;
+    const style = view.getComputedStyle(el);
+    return style.display !== "none" && style.visibility !== "hidden";
+  }
+
+  function composerFromEvent(event) {
+    const path = typeof event.composedPath === "function" ? event.composedPath() : [event.target];
+    for (const node of path) {
+      if (isEditableNode(node)) return node;
+    }
+    let node = event.target;
+    while (node && node.nodeType === 1) {
+      if (isEditableNode(node)) return node;
+      node = node.parentElement || node.getRootNode?.().host || null;
+    }
+    return null;
+  }
+
+  function rememberComposer(event) {
+    const candidate = composerFromEvent(event);
+    if (!candidate) return;
+    if (STATE.composer !== candidate) {
+      if (STATE.composer) STATE.composer.removeEventListener("input", onInput);
+      STATE.composer = candidate;
+      candidate.addEventListener("input", onInput);
+    }
+    ensureUI();
+    updateTrigger();
+    positionUI();
+  }
+
+  function composerDiagnostics() {
+    const visible = [...document.querySelectorAll('textarea,input,[contenteditable],[role="textbox"],[aria-multiline="true"]')]
+      .filter(el => isEditableNode(el));
+    const active = document.activeElement;
+    const activeName = active ? [active.tagName, active.id, active.getAttribute?.("role"), active.getAttribute?.("contenteditable")].filter(Boolean).join("#") : "none";
+    return { visibleEditableCount: visible.length, activeElement: activeName, knownComposerConnected: Boolean(STATE.composer?.isConnected), knownComposerTag: STATE.composer?.tagName || null };
   }
 
   function detect(text) {
@@ -365,7 +421,8 @@
   }
 
   function attach() {
-    const composer=findComposer();
+    const detected = findComposer();
+    const composer = detected || (STATE.composer?.isConnected ? STATE.composer : null);
     if (!composer) return;
     if (STATE.composer !== composer) {
       if (STATE.composer) STATE.composer.removeEventListener("input",onInput);
@@ -398,17 +455,33 @@
 
   chrome.runtime.onMessage.addListener((msg,_sender,sendResponse) => {
     if (msg?.type==="HM_ANALYZE_NOW") {
-      STATE.composer=findComposer();
-      if (!STATE.composer) { sendResponse({ok:false}); return true; }
+      // Opening the browser action popup steals focus from the page editor.
+      // Do not discard the last composer that was remembered while the user typed.
+      const detected = findComposer();
+      if (detected) {
+        if (STATE.composer && STATE.composer !== detected) STATE.composer.removeEventListener("input",onInput);
+        STATE.composer = detected;
+        STATE.composer.addEventListener("input",onInput);
+      }
+      if (!STATE.composer?.isConnected) {
+        sendResponse({ok:false,reason:"NO_COMPOSER",diagnostics:composerDiagnostics()});
+        return true;
+      }
+      const text = readComposer(STATE.composer);
+      if (!text) {
+        sendResponse({ok:false,reason:"EMPTY_COMPOSER",diagnostics:composerDiagnostics()});
+        return true;
+      }
       openPanel();
-      sendResponse({ok:Boolean(readComposer())});
+      sendResponse({ok:true,diagnostics:composerDiagnostics()});
       return true;
     }
     return false;
   });
 
   attach();
-  document.addEventListener("focusin", () => setTimeout(attach, 80), true);
+  document.addEventListener("focusin", event => rememberComposer(event), true);
+  document.addEventListener("input", event => rememberComposer(event), true);
   document.addEventListener("click", () => setTimeout(attach, 80), true);
   new MutationObserver(attach).observe(document.documentElement,{childList:true,subtree:true});
   addEventListener("resize",positionUI,{passive:true});
