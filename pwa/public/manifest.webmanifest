@@ -1,0 +1,12 @@
+{
+  "name": "HM Token Intelligence",
+  "short_name": "HM Token",
+  "description": "Prompt quality and token efficiency analysis on your device.",
+  "lang": "vi",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#0b1020",
+  "theme_color": "#111827",
+  "icons": [{ "src": "/hm-icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }]
+}
