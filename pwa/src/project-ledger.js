@@ -91,7 +91,11 @@ export function exportProjectReportCSV(project) {
     ...report.conversations.map(item => [report.project, "conversation:" + item.name, item.tokens]),
     ...Object.entries(report.byModel).map(([model, tokens]) => [report.project, "model:" + model, tokens])
   ];
-  const escape = value => '"' + String(value ?? "").replace(/"/gu, '""') + '"';
+  const escape = value => {
+    let text = String(value ?? "");
+    if (/^[=+@\\-\\t\\r]/u.test(text)) text = "'" + text;
+    return '"' + text.replace(/"/gu, '""') + '"';
+  };
   return "\uFEFF" + rows.map(row => row.map(escape).join(",")).join("\r\n");
 }
 export function removeProject(ledger, projectId) {
