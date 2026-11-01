@@ -1,3 +1,5 @@
+> **Important:** This guide is only for the optional MCP integration on eligible ChatGPT web workspaces. It is not the universal installation path. The main HM experience is the standalone [PWA](../pwa/README.md), which is designed to work independently of ChatGPT subscription tier and does not need MCP or an OpenAI API key. The root Render Blueprint deploys the PWA only; it does not deploy the MCP service.
+
 # Connect HM Token Intelligence to ChatGPT
 
 ## What is implemented
