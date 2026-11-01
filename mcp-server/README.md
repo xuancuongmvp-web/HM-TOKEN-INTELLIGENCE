@@ -20,13 +20,16 @@ MCP endpoint: `http://localhost:8787/mcp`
 
 ## Tools
 
-- `analyze_prompt`: tokenizer count for supplied text and selected encoding, plus heuristic findings.
+- `count_tokens`: exact count for supplied text and selected encoding.
+- `compare_prompts`: same-encoding before/after counts and token delta.
+- `analyze_prompt`: tokenizer count plus heuristic prompt findings.
 - `optimize_prompt_formatting`: conservative whitespace/newline cleanup preview.
 
-## Hosting status
+## Authentication and hosting status
 
-The root `render.yaml` now deploys only the static PWA. This MCP server is not part of the default Blueprint and needs a separate deployment if an eligible ChatGPT workspace is available.
+The MCP endpoint supports a bearer token via `HM_MCP_API_TOKEN`. When configured, every `/mcp` request must include `Authorization: Bearer <token>`. Production startup refuses to run without this secret. The public `/` and `/health` endpoints do not accept prompt content. Never commit the token; configure it as a hosting-provider secret.
 
-OpenAI's current documentation limits full custom MCP to Business and Enterprise/Edu on ChatGPT web. Pro is restricted to read/fetch permissions; mobile custom MCP is not supported. See [OpenAI's guide](https://help.openai.com/en/articles/12584461-connecting-custom-mcp-servers-in-chatgpt).
+This is a single shared bearer credential, not OAuth and not per-user identity or per-user quotas. The current rate limit remains process-wide. Before a public multi-user launch, implement OAuth or per-user credentials, per-user quotas, stronger abuse controls, privacy review, and security testing.
 
-This code remains experimental. Authentication is an initial bearer-token gate only; it does not provide user accounts, OAuth, per-user quotas, or production-grade privacy controls. Do not expose it as a public multi-user service until those controls and a security review are complete.
+The root `render.yaml` currently deploys only the static PWA. This MCP server is not part of the default Blueprint and still needs a separately configured, authenticated HTTPS deployment.
+
