@@ -19,3 +19,10 @@ button{border:0;border-radius:9px;padding:12px 16px;font-weight:750;font-size:12
 .note{font-size:10px;color:#8998ad;line-height:1.65;margin-top:15px}.review{color:#e4c98f;border-color:#806538}
 footer{padding:25px 0 36px;color:#8492a8;font-size:11px;line-height:1.6}footer>b{color:var(--gold);letter-spacing:2px}footer b span{font-size:10px;color:#9eabbf}footer small{color:#66758c}
 @media(max-width:640px){.shell{padding:0 13px}header{height:68px}.brand strong{font-size:10px}.local{font-size:8px;padding:7px}.intro{padding:38px 0 24px}.intro h1{letter-spacing:-1.5px}.intro p:last-child{font-size:12px}.panel{padding:16px}.section-head{align-items:flex-start;flex-direction:column}.section-head>div{gap:10px}label{width:100%;display:flex;justify-content:space-between;align-items:center}select{margin-left:0}.metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.actions>*{flex:1}.actions span{width:100%;margin-left:0}.editor-meta{font-size:9px;gap:8px}.editor-meta span:last-child{text-align:right}}
+
+.dimensions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:11px}
+.dimension{display:flex;align-items:center;gap:10px;padding:11px;background:#0b1425;border:1px solid #26354d;border-radius:9px;min-width:0}
+.dimension-state{display:grid;place-items:center;width:22px;height:22px;border-radius:50%;font-size:12px;font-weight:800;flex:none;background:#49352a;color:#e2b765}
+.dimension.found .dimension-state{background:#173d34;color:#65d3a2}
+.dimension-copy{min-width:0}.dimension-copy b,.dimension-copy small{display:block}.dimension-copy b{font-size:11px}.dimension-copy small{font-size:9px;line-height:1.45;color:#8594aa;margin-top:3px}
+@media(max-width:640px){.dimensions{grid-template-columns:1fr}}
