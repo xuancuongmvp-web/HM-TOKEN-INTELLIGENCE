@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { addUsageEntry, createProjectLedger, summarizeEntries, buildProjectReport, removeProject, exportLedger, loadLedger, saveLedger, LEDGER_STORAGE_KEY } from "../src/project-ledger.js";
+import { addUsageEntry, createProjectLedger, summarizeEntries, buildProjectReport, exportProjectReportCSV, removeProject, exportLedger, loadLedger, saveLedger, LEDGER_STORAGE_KEY } from "../src/project-ledger.js";
 
 test("records exact supplied message tokens without retaining message content", () => {
   const ledger = createProjectLedger();
@@ -78,4 +78,14 @@ test("counts words by whitespace and records no pasted text", () => {
   const { entry } = addUsageEntry(ledger, { projectName: "Words", role: "user", text: "one two\\nthree" });
   assert.equal(entry.words, 3);
   assert.equal(Object.hasOwn(entry, "text"), false);
+});
+
+test("exports a CSV retrospective with project, conversation and model totals", () => {
+  const ledger = createProjectLedger();
+  addUsageEntry(ledger, { projectName: "CSV Test", conversationName: "Planning", role: "user", text: "Plan it", model: "GPT" });
+  const csv = exportProjectReportCSV(ledger.projects[0]);
+  assert.ok(csv.startsWith("\uFEFF"));
+  assert.match(csv, /total_tokens/);
+  assert.match(csv, /conversation:Planning/);
+  assert.match(csv, /model:GPT/);
 });
