@@ -1,4 +1,5 @@
 import { analyzePrompt, cleanFormatting } from "./analyzer.js";
+import { addUsageEntry, summarizeEntries, loadLedger, saveLedger, exportLedger, removeProject } from "./project-ledger.js";
 import "./style.css";
 const $ = selector => document.querySelector(selector);
 const input = $("#prompt");
@@ -112,3 +113,84 @@ $("#use-clean").addEventListener("click", () => {
 if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
   addEventListener("load", () => navigator.serviceWorker.register("/sw.js").catch(() => {}));
 }
+
+const ledger = loadLedger();
+
+function renderLedger() {
+  const summaryNode = $("#ledger-summary");
+  const projectsNode = $("#ledger-projects");
+  summaryNode.replaceChildren();
+  projectsNode.replaceChildren();
+  const allEntries = ledger.projects.flatMap(project => project.entries);
+  const total = summarizeEntries(allEntries);
+  [["TỔNG TOKEN", total.totalTokens], ["PROMPT NGƯỜI DÙNG", total.userTokens],
+    ["PHẢN HỒI AI", total.assistantTokens], ["CUỘC TRÒ CHUYỆN", total.conversations]].forEach(([label, value]) => {
+    const card = el("div", "metric");
+    card.append(el("small", "", label), el("strong", "", Number(value).toLocaleString("vi-VN")));
+    summaryNode.append(card);
+  });
+  ledger.projects.forEach(project => {
+    const stats = summarizeEntries(project.entries);
+    const card = el("article", "ledger-project");
+    const heading = el("div", "ledger-project-head");
+    const title = el("div");
+    title.append(el("h3", "", project.name), el("small", "", stats.conversations + " cuộc trò chuyện · " + stats.messages + " mục ghi nhận"));
+    heading.append(title);
+    const remove = el("button", "secondary ledger-remove", "Xóa dự án");
+    remove.type = "button";
+    remove.addEventListener("click", () => {
+      removeProject(ledger, project.id);
+      saveLedger(ledger);
+      renderLedger();
+      $("#ledger-status").textContent = "Đã xóa dữ liệu dự án khỏi trình duyệt này.";
+    });
+    heading.append(remove);
+    card.append(heading);
+    card.append(el("p", "ledger-breakdown", "Tổng " + stats.totalTokens.toLocaleString("vi-VN") +
+      " token · Prompt " + stats.userTokens.toLocaleString("vi-VN") + " · AI " + stats.assistantTokens.toLocaleString("vi-VN")));
+    Object.entries(stats.byModel).forEach(([model, tokens]) => card.append(
+      el("small", "ledger-model", model + ": " + tokens.toLocaleString("vi-VN") + " token")));
+    projectsNode.append(card);
+  });
+}
+
+$("#ledger-add").addEventListener("click", () => {
+  try {
+    const { entry } = addUsageEntry(ledger, {
+      projectName: $("#project-name").value,
+      conversationName: $("#conversation-name").value,
+      model: $("#model-name").value,
+      role: $("#message-role").value,
+      text: $("#ledger-text").value,
+      encoding: $("#encoding").value
+    });
+    saveLedger(ledger);
+    $("#ledger-status").textContent = "Đã ghi nhận " + entry.tokens.toLocaleString("vi-VN") +
+      " token (" + entry.role + "). Nội dung tin nhắn không được lưu.";
+    $("#ledger-text").value = "";
+    renderLedger();
+  } catch (error) {
+    $("#ledger-status").textContent = error.message;
+  }
+});
+
+$("#ledger-export").addEventListener("click", () => {
+  const blob = new Blob([exportLedger(ledger)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const link = el("a");
+  link.href = url;
+  link.download = "hm-token-project-usage.json";
+  link.click();
+  URL.revokeObjectURL(url);
+  $("#ledger-status").textContent = "Đã xuất báo cáo thống kê. File không chứa nội dung tin nhắn.";
+});
+
+$("#ledger-clear").addEventListener("click", () => {
+  if (!confirm("Xóa toàn bộ sổ theo dõi token dự án trên trình duyệt này?")) return;
+  ledger.projects = [];
+  saveLedger(ledger);
+  renderLedger();
+  $("#ledger-status").textContent = "Đã xóa toàn bộ sổ theo dõi.";
+});
+
+renderLedger();
