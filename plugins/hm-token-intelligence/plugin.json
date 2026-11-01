@@ -1,8 +1,8 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "hm-token-intelligence",
-  "version": "0.3.0",
-  "description": "Prompt intelligence and token-efficiency assistant with an MCP-ready exact tokenizer workflow.",
+  "version": "0.4.0",
+  "description": "Prompt intelligence, exact token comparison, and optional project usage retrospectives.",
   "author": {
     "name": "HM Token Intelligence"
   },
@@ -24,7 +24,7 @@
       "interface": {
         "displayName": "HM Token Intelligence",
         "shortDescription": "Analyze prompts and measure token efficiency.",
-        "longDescription": "HM reviews prompt clarity and quality, identifies waste and ambiguity, proposes intent-preserving improvements, and compares exact token counts when the HM Token Engine MCP tools are connected.",
+        "longDescription": "HM reviews prompt clarity and quality, identifies waste and ambiguity, proposes intent-preserving improvements, compares exact token counts when the HM Token Engine MCP tools are connected, and guides users to an optional local-first project token ledger for retrospective analysis.",
         "developerName": "HM Token Intelligence",
         "category": "Productivity",
         "capabilities": [
@@ -32,7 +32,8 @@
           "Improve prompt quality while preserving intent",
           "Count tokens with supported encodings when connected",
           "Compare original and revised prompt token counts",
-          "Evaluate AI answers against original requirements"
+          "Evaluate AI answers against original requirements",
+          "Track optional project and conversation token usage with retrospective reports"
         ],
         "websiteURL": "https://github.com/xuancuongmvp-web/HM-TOKEN-INTELLIGENCE",
         "defaultPrompt": [
