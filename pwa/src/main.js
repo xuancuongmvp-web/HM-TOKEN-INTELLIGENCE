@@ -123,8 +123,12 @@ function renderLedger() {
   projectsNode.replaceChildren();
   const allEntries = ledger.projects.flatMap(project => project.entries);
   const total = summarizeEntries(allEntries);
-  [["TỔNG TOKEN", total.totalTokens], ["PROMPT NGƯỜI DÙNG", total.userTokens],
-    ["PHẢN HỒI AI", total.assistantTokens], ["CUỘC TRÒ CHUYỆN", total.conversations]].forEach(([label, value]) => {
+  const encodingNames = Object.keys(total.byEncoding);
+  const cards = encodingNames.length <= 1
+    ? [["TỔNG TOKEN", total.totalTokens], ["PROMPT NGƯỜI DÙNG", total.userTokens],
+      ["PHẢN HỒI AI", total.assistantTokens], ["CUỘC TRÒ CHUYỆN", total.conversations]]
+    : encodingNames.map(encoding => [encoding, total.byEncoding[encoding]]);
+  cards.forEach(([label, value]) => {
     const card = el("div", "metric");
     card.append(el("small", "", label), el("strong", "", Number(value).toLocaleString("vi-VN")));
     summaryNode.append(card);
@@ -134,7 +138,7 @@ function renderLedger() {
     const card = el("article", "ledger-project");
     const heading = el("div", "ledger-project-head");
     const title = el("div");
-    title.append(el("h3", "", project.name), el("small", "", stats.conversations + " cuộc trò chuyện · " + stats.messages + " mục ghi nhận"));
+    title.append(el("h3", "", project.name), el("small", "", stats.conversations + " cuộc trò chuyện · " + stats.messages + " mục ghi nhận · " + project.encoding));
     heading.append(title);
     const remove = el("button", "secondary ledger-remove", "Xóa dự án");
     remove.type = "button";
@@ -148,6 +152,12 @@ function renderLedger() {
     card.append(heading);
     card.append(el("p", "ledger-breakdown", "Tổng " + stats.totalTokens.toLocaleString("vi-VN") +
       " token · Prompt " + stats.userTokens.toLocaleString("vi-VN") + " · AI " + stats.assistantTokens.toLocaleString("vi-VN")));
+    const conversations = new Map();
+    project.entries.forEach(entry => {
+      conversations.set(entry.conversationName, (conversations.get(entry.conversationName) || 0) + entry.tokens);
+    });
+    conversations.forEach((tokens, name) => card.append(
+      el("small", "ledger-model", name + ": " + tokens.toLocaleString("vi-VN") + " token")));
     Object.entries(stats.byModel).forEach(([model, tokens]) => card.append(
       el("small", "ledger-model", model + ": " + tokens.toLocaleString("vi-VN") + " token")));
     projectsNode.append(card);
