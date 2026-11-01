@@ -14,6 +14,22 @@ const PORT = Number(process.env.PORT || 8787);
 const MCP_PATH = "/mcp";
 const ENCODINGS = ["o200k_base", "cl100k_base", "p50k_base", "r50k_base"];
 
+function createRateLimiter(limit = 120, windowMs = 60_000) {
+  let windowStart = null;
+  let requestCount = 0;
+  return (now = Date.now()) => {
+    if (windowStart === null || now - windowStart >= windowMs || now < windowStart) {
+      windowStart = now;
+      requestCount = 0;
+    }
+    requestCount += 1;
+    return requestCount > limit;
+  };
+}
+const isRateLimited = createRateLimiter(
+  Number.parseInt(process.env.HM_MCP_REQUESTS_PER_MINUTE || "120", 10)
+);
+
 function hasAnyPhrase(text, phrases) {
   const lower = text.toLocaleLowerCase("vi-VN");
   return phrases.some(phrase => {
@@ -138,6 +154,11 @@ const httpServer = createServer(async (req, res) => {
     return;
   }
   if (url.pathname === MCP_PATH && ["POST", "GET", "DELETE"].includes(req.method || "")) {
+    if (isRateLimited()) {
+      res.writeHead(429, { "content-type": "application/json", "retry-after": "60" })
+        .end(JSON.stringify({ error: "Rate limit exceeded. Retry in 60 seconds." }));
+      return;
+    }
     res.setHeader("Access-Control-Allow-Origin", "*");
     res.setHeader("Access-Control-Expose-Headers", "Mcp-Session-Id");
     const server = createMcpServer();
@@ -158,4 +179,4 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === resolve(process.argv[1
   httpServer.listen(PORT, "0.0.0.0", () => console.log(`HM Token Intelligence MCP listening on port ${PORT} at ${MCP_PATH}`));
 }
 
-export { analyzePrompt, optimizePrompt, countTokens };
+export { analyzePrompt, optimizePrompt, countTokens, createRateLimiter };
