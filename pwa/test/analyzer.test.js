@@ -23,3 +23,16 @@ test("empty prompt produces an explicit warning", () => {
   assert.equal(result.tokens, 0);
   assert.equal(result.issues[0].code, "empty");
 });
+
+test("counts Chinese text and flags broad Chinese requests", () => {
+  assert.ok(countTokens("请分析全部内容", "o200k_base") > 0);
+  const result = analyzePrompt("请分析全部内容并帮我处理一下。");
+  assert.ok(result.issues.some(item => item.code === "scope"));
+  assert.ok(result.issues.some(item => item.code === "output"));
+});
+test("detects repeated instruction lines without deleting them", () => {
+  const result = analyzePrompt("Keep the original structure.\nKeep the original structure.");
+  assert.ok(result.issues.some(item => item.code === "duplicates"));
+  assert.equal(cleanFormatting("Keep the original structure.\nKeep the original structure.").optimized,
+    "Keep the original structure.\nKeep the original structure.");
+});
