@@ -1,34 +1,47 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "hm-token-intelligence",
-  "version": "0.1.0",
-  "description": "Review, diagnose, and improve prompts while preserving the user's intended meaning and answer quality.",
+  "version": "0.2.0",
+  "description": "A reusable prompt-intelligence workflow to diagnose, improve, and evaluate AI prompts while preserving the user's intent and answer quality.",
   "author": {
     "name": "HM Token Intelligence"
   },
+  "homepage": "https://github.com/xuancuongmvp-web/HM-TOKEN-INTELLIGENCE",
   "repository": "https://github.com/xuancuongmvp-web/HM-TOKEN-INTELLIGENCE",
   "license": "MIT",
   "keywords": [
     "prompt-engineering",
     "prompt-review",
     "token-efficiency",
-    "quality-assurance",
-    "vietnamese"
+    "prompt-quality",
+    "response-evaluation",
+    "vietnamese",
+    "multilingual"
   ],
   "extensions": {
     "com.openai": {
+      "onboardingSkill": "./skills/setup/SKILL.md",
       "interface": {
         "displayName": "HM Token Intelligence",
-        "shortDescription": "Review and improve prompts without losing intent.",
-        "longDescription": "An AI-callable prompt intelligence workflow. Detect ambiguity, missing context, contradictions, weak output specifications, and unnecessary repetition. Explain issues, suggest improvements, preserve the original intent, and assess answer quality when evidence is provided.",
+        "shortDescription": "Diagnose and improve prompts without losing intent.",
+        "longDescription": "HM reviews the task, scope, context, constraints, output requirements, consistency, and token efficiency. It explains concrete risks, proposes an improved prompt for user approval, and can evaluate an AI answer against the original request. HM never silently replaces or submits a prompt.",
         "developerName": "HM Token Intelligence",
         "category": "Productivity",
+        "capabilities": [
+          "Review prompt clarity and completeness",
+          "Improve prompt quality while preserving intent",
+          "Identify ambiguity, contradictions, and repetition",
+          "Evaluate AI answers against original requirements"
+        ],
+        "websiteURL": "https://github.com/xuancuongmvp-web/HM-TOKEN-INTELLIGENCE",
         "defaultPrompt": [
           "Use HM to review this prompt before I send it.",
-          "Use HM to improve this prompt while preserving every important requirement.",
+          "Use HM to improve this prompt while preserving all important requirements.",
           "Use HM to compare this AI answer with my original request."
         ],
-        "brandColor": "#D7AE62"
+        "brandColor": "#D7AE62",
+        "composerIcon": "./assets/hm-icon.svg",
+        "logo": "./assets/hm-logo.svg"
       }
     }
   }
