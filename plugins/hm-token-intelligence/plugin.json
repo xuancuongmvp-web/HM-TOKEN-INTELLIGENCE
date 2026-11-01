@@ -1,0 +1,28 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "hm-token-intelligence",
+  "version": "0.1.0",
+  "description": "Review, diagnose, and improve prompts while preserving the user's intended meaning and answer quality.",
+  "author": { "name": "HM Token Intelligence" },
+  "repository": "https://github.com/xuancuongmvp-web/HM-TOKEN-INTELLIGENCE",
+  "license": "MIT",
+  "keywords": ["prompt-engineering", "prompt-review", "token-efficiency", "quality-assurance", "vietnamese"],
+  "extensions": {
+    "com.openai": {
+      "interface": {
+        "displayName": "HM Token Intelligence",
+        "shortDescription": "Review and improve prompts without losing intent.",
+        "longDescription": "An AI-callable prompt intelligence workflow. Detect ambiguity, missing context, contradictions, weak output specifications, and unnecessary repetition. Explain issues, suggest improvements, preserve the original intent, and assess answer quality when evidence is provided.",
+        "developerName": "HM Token Intelligence",
+        "category": "Productivity",
+        "capabilities": ["Review prompts", "Improve prompt clarity", "Assess response quality"],
+        "defaultPrompt": [
+          "Use HM to review this prompt before I send it.",
+          "Use HM to improve this prompt while preserving every important requirement.",
+          "Use HM to compare this AI answer with my original request."
+        ],
+        "brandColor": "#D7AE62"
+      }
+    }
+  }
+}
