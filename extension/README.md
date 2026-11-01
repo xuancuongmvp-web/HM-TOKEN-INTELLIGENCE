@@ -66,3 +66,9 @@ The toolbar popup is only a launcher. The actual analysis panel is rendered insi
 ## ChatGPT composer detection
 
 For ChatGPT the extension tries the `#prompt-textarea` ProseMirror editor first, then role/textbox/contenteditable/textarea variants. It scores visible candidates, includes open shadow roots, and checks the last focused editor. This is best-effort because the site's DOM is not a stable public API.
+
+## HM 0.3.2 composer-recognition repair
+
+Version 0.3.2 remembers the actual editable element while the user focuses/types in the composer. This matters because clicking the browser toolbar popup moves focus away from the ChatGPT page; a fresh DOM query at that moment can fail or select the wrong element. The message handler now prefers the previously remembered, still-connected editor and only falls back to a fresh scan. Input/focus events also inspect the composed event path to find a contenteditable root rather than a nested paragraph. If recognition still fails, the popup displays a small diagnostic snapshot (visible editable count and active element) to guide the next fix.
+
+After installing this update, use `edge://extensions` → HM Prompt Assistant → **Reload**, then return to ChatGPT and press `Ctrl+R`. Confirm the extension card shows version **0.3.2**. Click inside the message field and type a short test phrase; a floating HM button should appear near the composer. The toolbar popup is a secondary launcher.
