@@ -17,7 +17,7 @@ const ENCODINGS = ["o200k_base", "cl100k_base", "p50k_base", "r50k_base"];
 function countTokens(text, encodingName = "o200k_base") {
   if (!ENCODINGS.includes(encodingName)) throw new Error("Unsupported encoding. Choose: " + ENCODINGS.join(", "));
   const encoding = getEncoding(encodingName);
-  return encoding.encode(text, [], { allowedSpecial: new Set(), disallowedSpecial: new Set() }).length;
+  return encoding.encode(text).length;
 }
 
 function analyzePrompt(text, encodingName = "o200k_base") {
@@ -138,6 +138,6 @@ const httpServer = createServer(async (req, res) => {
   }
   res.writeHead(404).end("Not Found");
 });
-httpServer.listen(PORT, "0.0.0.0", () => console.log(`HM Token Intelligence MCP listening on port ${PORT} at ${MCP_PATH}`));
+if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {\n  httpServer.listen(PORT, "0.0.0.0", () => console.log(`HM Token Intelligence MCP listening on port ${PORT} at ${MCP_PATH}`));\n}
 
 export { analyzePrompt, optimizePrompt, countTokens };
