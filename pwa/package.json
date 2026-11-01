@@ -1,0 +1,1 @@
+{"name":"hm-token-intelligence-pwa","version":"0.1.0","private":true,"type":"module","scripts":{"dev":"vite --host 0.0.0.0","build":"vite build","test":"node --test"},"dependencies":{"js-tiktoken":"^1.0.21"},"devDependencies":{"vite":"^7.1.12"}}
