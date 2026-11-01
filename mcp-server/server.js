@@ -113,6 +113,65 @@ function createMcpServer() {
     estimate_note: z.string()
   };
 
+  registerAppTool(server, "count_tokens", {
+    title: "Đếm token chính xác",
+    description: "Đếm token bằng js-tiktoken cho toàn bộ văn bản người dùng cung cấp, theo một trong các encoding được hỗ trợ. Chỉ số này không bao gồm hidden context, lịch sử máy chủ hoặc payload đa phương tiện.",
+    inputSchema: { text: z.string().max(100000, "Text is too long (maximum 100,000 characters)."), encoding: z.enum(ENCODINGS).default("o200k_base") },
+    outputSchema: {
+      encoding: z.string(), tokens: z.number(), words: z.number(), characters: z.number(),
+      exact_for_supplied_text: z.boolean(), scope_note: z.string()
+    }
+  }, async ({ text, encoding = "o200k_base" }) => {
+    const result = {
+      encoding,
+      tokens: countTokens(text, encoding),
+      words: text.trim() ? text.trim().split(/\\s+/u).length : 0,
+      characters: text.length,
+      exact_for_supplied_text: true,
+      scope_note: "Exact tokenizer count for the supplied text only. Does not include hidden instructions, server-side history, tool schemas, or multimodal payloads."
+    };
+    return {
+      content: [{ type: "text", text: `HM Token Count: ${result.tokens} tokens (${encoding}) for the supplied text. ${result.scope_note}` }],
+      structuredContent: result
+    };
+  });
+
+  registerAppTool(server, "compare_prompts", {
+    title: "So sánh token trước và sau",
+    description: "Đếm chính xác hai phiên bản prompt bằng cùng một tokenizer; trả về chênh lệch token và tỷ lệ thay đổi. Không tự đánh giá tương đương ngữ nghĩa.",
+    inputSchema: {
+      original: z.string().max(100000),
+      revised: z.string().max(100000),
+      encoding: z.enum(ENCODINGS).default("o200k_base")
+    },
+    outputSchema: {
+      encoding: z.string(), original_tokens: z.number(), revised_tokens: z.number(),
+      tokens_saved: z.number(), reduction_percent: z.number(),
+      original_characters: z.number(), revised_characters: z.number(),
+      exact_for_supplied_text: z.boolean(), semantic_equivalence_checked: z.boolean(), note: z.string()
+    }
+  }, async ({ original, revised, encoding = "o200k_base" }) => {
+    const originalTokens = countTokens(original, encoding);
+    const revisedTokens = countTokens(revised, encoding);
+    const saved = originalTokens - revisedTokens;
+    const result = {
+      encoding,
+      original_tokens: originalTokens,
+      revised_tokens: revisedTokens,
+      tokens_saved: saved,
+      reduction_percent: originalTokens ? Number((saved / originalTokens * 100).toFixed(2)) : 0,
+      original_characters: original.length,
+      revised_characters: revised.length,
+      exact_for_supplied_text: true,
+      semantic_equivalence_checked: false,
+      note: "Counts are exact for the two supplied texts and selected encoding. This tool does not prove that the revised prompt preserves the original meaning; HM must perform a separate semantic comparison."
+    };
+    return {
+      content: [{ type: "text", text: `HM comparison (${encoding}): original ${originalTokens}, revised ${revisedTokens}, difference ${saved} tokens (${result.reduction_percent}%). Semantic equivalence has not been established by the tokenizer.` }],
+      structuredContent: result
+    };
+  });
+
   registerAppTool(server, "analyze_prompt", {
     title: "Phân tích prompt",
     description: "Đếm token chính xác cho văn bản được cung cấp theo encoding đã chọn; đánh giá các dấu hiệu mơ hồ, thiếu đầu ra, nội dung lặp và độ dài. Chỉ phân tích phần văn bản được gửi, không đọc hidden context.",
