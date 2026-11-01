@@ -159,10 +159,19 @@
   }
 
   function composerFromEvent(event) {
-    const path = typeof event.composedPath === "function" ? event.composedPath() : [event.target];
-    for (const node of path) {
-      if (isEditableNode(node)) return node;
-    }
+    const eventPath = typeof event.composedPath === "function" ? event.composedPath() : [event.target];
+    const candidates = eventPath.filter(node => isEditableNode(node));
+    // Prefer the actual editor root over a paragraph/span nested inside it.
+    const explicitRoot = candidates.find(node =>
+      node.getAttribute("contenteditable") === "true" ||
+      node.getAttribute("contenteditable") === "plaintext-only" ||
+      node.getAttribute("role") === "textbox" ||
+      node.getAttribute("aria-multiline") === "true" ||
+      node.tagName === "TEXTAREA" || node.tagName === "INPUT" ||
+      node.hasAttribute("data-lexical-editor") || node.hasAttribute("data-slate-editor")
+    );
+    if (explicitRoot) return explicitRoot;
+    if (candidates.length) return candidates[candidates.length - 1];
     let node = event.target;
     while (node && node.nodeType === 1) {
       if (isEditableNode(node)) return node;
@@ -457,7 +466,8 @@
     if (msg?.type==="HM_ANALYZE_NOW") {
       // Opening the browser action popup steals focus from the page editor.
       // Do not discard the last composer that was remembered while the user typed.
-      const detected = findComposer();
+      const remembered = STATE.composer?.isConnected && readComposer(STATE.composer) ? STATE.composer : null;
+      const detected = remembered || findComposer();
       if (detected) {
         if (STATE.composer && STATE.composer !== detected) STATE.composer.removeEventListener("input",onInput);
         STATE.composer = detected;
@@ -483,7 +493,11 @@
   document.addEventListener("focusin", event => rememberComposer(event), true);
   document.addEventListener("input", event => rememberComposer(event), true);
   document.addEventListener("click", () => setTimeout(attach, 80), true);
-  new MutationObserver(attach).observe(document.documentElement,{childList:true,subtree:true});
+  let attachTimer = null;
+  new MutationObserver(() => {
+    clearTimeout(attachTimer);
+    attachTimer = setTimeout(attach, 180);
+  }).observe(document.documentElement,{childList:true,subtree:true});
   addEventListener("resize",positionUI,{passive:true});
   addEventListener("scroll",positionUI,{passive:true,capture:true});
 })();
