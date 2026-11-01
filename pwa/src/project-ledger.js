@@ -6,12 +6,13 @@ export function createProjectLedger() {
   return { version: 1, projects: [] };
 }
 
-export function addUsageEntry(ledger, { projectName, conversationName = "Cuộc trò chuyện", role, text, encoding = "o200k_base", model = "", date = new Date().toISOString() }) {
+export function addUsageEntry(ledger, { projectName, conversationName = "Cuộc trò chuyện", role, kind = "normal", text, encoding = "o200k_base", model = "", date = new Date().toISOString() }) {
   const name = String(projectName || "").trim();
   const content = String(text ?? "");
   if (!name) throw new Error("Hãy nhập tên dự án.");
   if (!content.trim()) throw new Error("Hãy nhập nội dung cần ghi nhận.");
   if (!["user", "assistant", "system", "other"].includes(role)) throw new Error("Vai trò không hợp lệ.");
+  if (!["normal", "rework", "clarification", "revision"].includes(kind)) throw new Error("Loại tương tác không hợp lệ.");
   if (!ENCODINGS.includes(encoding)) throw new Error("Encoding không được hỗ trợ.");
 
   let project = ledger.projects.find(item => item.name.toLocaleLowerCase() === name.toLocaleLowerCase());
@@ -25,7 +26,7 @@ export function addUsageEntry(ledger, { projectName, conversationName = "Cuộc 
   const entry = {
     id: globalThis.crypto?.randomUUID?.() || `entry-${Date.now()}-${Math.random().toString(16).slice(2)}`,
     conversationName: String(conversationName || "Cuộc trò chuyện").trim() || "Cuộc trò chuyện",
-    role, model: String(model || "").trim(), encoding, tokens,
+    role, kind, model: String(model || "").trim(), encoding, tokens,
     characters: content.length, words: content.trim().split(/\\s+/u).length,
     date
   };
@@ -49,6 +50,34 @@ export function summarizeEntries(entries = []) {
   return summary;
 }
 
+export function buildProjectReport(project) {
+  const entries = project?.entries || [];
+  const summary = summarizeEntries(entries);
+  const byConversation = new Map();
+  let reworkTokens = 0;
+  let reworkEntries = 0;
+  let clarificationTokens = 0;
+  for (const entry of entries) {
+    const key = entry.conversationName || "Cuộc trò chuyện";
+    const item = byConversation.get(key) || { name: key, tokens: 0, userTokens: 0, assistantTokens: 0, entries: 0 };
+    item.tokens += entry.tokens; item.entries += 1;
+    if (entry.role === "user") item.userTokens += entry.tokens;
+    if (entry.role === "assistant") item.assistantTokens += entry.tokens;
+    byConversation.set(key, item);
+    if (entry.kind === "rework" || entry.kind === "revision") { reworkTokens += entry.tokens; reworkEntries += 1; }
+    if (entry.kind === "clarification") clarificationTokens += entry.tokens;
+  }
+  const conversations = [...byConversation.values()].sort((a, b) => b.tokens - a.tokens);
+  const reworkPercent = summary.totalTokens ? Number((reworkTokens / summary.totalTokens * 100).toFixed(1)) : 0;
+  const userToAiRatio = summary.assistantTokens ? Number((summary.userTokens / summary.assistantTokens).toFixed(2)) : null;
+  const insights = [];
+  if (conversations[0]) insights.push({ title: "Cuộc trò chuyện tiêu tốn nhiều token nhất", detail: conversations[0].name + ": " + conversations[0].tokens.toLocaleString("vi-VN") + " token." });
+  if (reworkEntries) insights.push({ title: "Token được gắn nhãn làm lại / chỉnh sửa", detail: reworkTokens.toLocaleString("vi-VN") + " token (" + reworkPercent + "% tổng số), qua " + reworkEntries + " mục ghi nhận. Nhãn do người dùng chọn, không tự chứng minh nguyên nhân làm lại." });
+  if (clarificationTokens) insights.push({ title: "Token làm rõ yêu cầu", detail: clarificationTokens.toLocaleString("vi-VN") + " token được gắn nhãn hỏi lại / làm rõ." });
+  if (userToAiRatio !== null) insights.push({ title: "Tỷ lệ token prompt / phản hồi AI", detail: userToAiRatio + ":1 theo số liệu đã ghi nhận; tỷ lệ cao không mặc định là lãng phí." });
+  if (!insights.length) insights.push({ title: "Chưa đủ dữ liệu để rút kinh nghiệm", detail: "Hãy ghi nhận cả prompt và phản hồi; đánh dấu các lần hỏi lại hoặc làm lại để báo cáo có thêm ngữ cảnh." });
+  return { project: project?.name || "Dự án", ...summary, reworkTokens, reworkEntries, reworkPercent, clarificationTokens, userToAiRatio, topConversation: conversations[0] || null, conversations, insights, limitation: "Báo cáo chỉ phản ánh các đoạn văn bản người dùng chủ động ghi nhận, không phải toàn bộ lịch sử hay usage/billing chính thức của nhà cung cấp AI." };
+}
 export function removeProject(ledger, projectId) {
   ledger.projects = ledger.projects.filter(project => project.id !== projectId);
   return ledger;
