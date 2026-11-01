@@ -51,7 +51,7 @@ ChatGPT needs the public HTTPS endpoint `https://YOUR-RENDER-SERVICE.onrender.co
 
 - This pilot does not implement user authentication or OAuth. Anyone who discovers the public URL may call its tools. Do not submit confidential, personal, customer, employee, or proprietary prompt text.
 - The server does not intentionally persist prompt content or log request bodies. Treat this as a prototype, not a security guarantee.
-- The MCP route has a 512 KiB request-body cap, a configurable 120-requests-per-minute process-wide budget, and a 16-element tool-input limit.
+- The MCP route caps HTTP request bodies at 512 KiB and each tool's prompt text at 100,000 characters. A configurable process-wide budget defaults to 120 requests per minute and is shared by all callers; it is not per-user authentication or an abuse-proof quota.
 - The rate budget is shared by every caller of this single service; it is not per-user authentication or an abuse-proof quota.
 - Before public or business use, add OAuth, per-user quotas, privacy notice/retention controls, monitoring, and a security review.
 - The server only analyzes text explicitly supplied to it. It cannot see the native ChatGPT composer or hidden instructions/history.
