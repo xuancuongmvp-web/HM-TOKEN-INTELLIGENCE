@@ -257,7 +257,7 @@ const httpServer = createServer(async (req, res) => {
 if (process.argv[1] && fileURLToPath(import.meta.url) === resolve(process.argv[1])) {
   if (process.env.NODE_ENV === "production" && !process.env.HM_MCP_API_TOKEN) {
     throw new Error("Refusing to start HM MCP in production without HM_MCP_API_TOKEN.");
-  }\n  httpServer.listen(PORT, process.env.HOST || "0.0.0.0", () => console.log(`HM Token Intelligence MCP listening on port ${PORT} at ${MCP_PATH}`));
+  }
+  httpServer.listen(PORT, process.env.HOST || "0.0.0.0", () => console.log(`HM Token Intelligence MCP listening on port ${PORT} at ${MCP_PATH}`));
 }
-
 export { analyzePrompt, optimizePrompt, countTokens, comparePrompts, createRateLimiter };
