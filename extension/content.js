@@ -477,13 +477,12 @@
         sendResponse({ok:false,reason:"NO_COMPOSER",diagnostics:composerDiagnostics()});
         return true;
       }
+      // Opening HM on an empty chat is valid: it must not trap focus in
+      // the browser toolbar popup. The popup closes and the user can type
+      // into the actual chat composer after HM has opened on the page.
       const text = readComposer(STATE.composer);
-      if (!text) {
-        sendResponse({ok:false,reason:"EMPTY_COMPOSER",diagnostics:composerDiagnostics()});
-        return true;
-      }
       openPanel();
-      sendResponse({ok:true,diagnostics:composerDiagnostics()});
+      sendResponse({ok:true,empty:!text,diagnostics:composerDiagnostics()});
       return true;
     }
     return false;
