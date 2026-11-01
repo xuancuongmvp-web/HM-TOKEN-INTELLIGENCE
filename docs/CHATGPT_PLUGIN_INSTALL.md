@@ -38,6 +38,18 @@ HM should identify that the scope is too broad, ask what object or topic should 
 
 Then try a well-specified prompt and confirm HM does not force unnecessary extra sections onto a simple task.
 
+## Install the standalone Skill ZIP (eligible accounts)
+
+When your account shows **Plugins → Skills → Create → Upload from your computer**:
+
+1. Download the `hm-prompt-intelligence-skill.zip` artifact from the latest successful **HM Node project checks** run in GitHub Actions.
+2. In ChatGPT, open **Plugins → Skills → Create → Upload from your computer**.
+3. Select the ZIP and wait for ChatGPT's skill scan.
+4. Review the skill details and install it.
+5. Start a new chat and invoke it by typing `@` and selecting **HM Prompt Intelligence**.
+
+The standalone Skill ZIP contains one top-level folder with exactly one `SKILL.md`, plus its optional OpenAI UI metadata and README. The separate Plugin ZIP is a portable package; to test it as a local plugin, use the repository marketplace instructions above rather than uploading it as a standalone Skill.
+
 ## What this plugin currently does
 
 The current release is a skill-led plugin. It packages reusable prompt-review and answer-evaluation instructions.
