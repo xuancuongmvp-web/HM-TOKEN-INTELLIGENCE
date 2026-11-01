@@ -9,6 +9,7 @@ on:
   pull_request:
     paths:
       - "mcp-server/**"
+      - "pwa/**"
       - ".github/workflows/mcp-server.yml"
 jobs:
   test:
