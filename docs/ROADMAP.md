@@ -17,7 +17,9 @@ HM's primary product must work independently from ChatGPT subscription level. Th
 - [x] User-reviewed formatting cleanup with before/after token counts
 - [x] Installable PWA manifest and service worker shell
 - [x] Validate PWA build and tests in GitHub Actions (verified in GitHub Actions)
-- [x] Add optional local-first project/conversation token ledger with per-role and per-model aggregation, JSON export, and no message-content retention\n- [ ] Expand multilingual test corpus across Vietnamese, English, and Chinese
+- [x] Add optional local-first project/conversation token ledger with per-role and per-model aggregation, JSON export, and no message-content retention
+- [x] Add project retrospective insights for conversation, model, rework and clarification totals with CSV export
+- [ ] Expand multilingual test corpus across Vietnamese, English, and Chinese
 - [ ] Calibrate quality indicators against human-reviewed examples
 - [ ] Improve semantic intent checks and actionable rewrite suggestions
 
