@@ -31,7 +31,9 @@ HM's primary product must work independently from ChatGPT subscription level. Th
 - [x] Generate standalone Skill ZIP and portable Plugin ZIP as CI artifacts
 - [ ] Test local marketplace discovery and explicit skill invocation in ChatGPT Desktop / Work / Codex surfaces
 - [ ] Confirm feature eligibility and install flow across personal/workspace plans
-- [ ] Connect authenticated MCP tools for exact tokenization and deterministic analysis
+- [x] Implement MCP exact tokenizer and prompt-comparison tools (`count_tokens`, `analyze_prompt`, `compare_prompts`)
+- [x] Connect HM Skill workflow instructions to exact tokenizer tool names
+- [ ] Deploy authenticated MCP service and register its endpoint in Plugin `mcp.json`
 - [ ] Add interactive in-chat MCP app UI where supported
 - [ ] Publish reviewed portable plugin package to the universal directory when eligible
 
