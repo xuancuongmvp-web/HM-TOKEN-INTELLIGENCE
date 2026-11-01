@@ -37,7 +37,7 @@
 <label>Mục đích ghi nhận<select id="message-kind"><option value="normal">Trao đổi bình thường</option><option value="clarification">Hỏi lại / làm rõ yêu cầu</option><option value="revision">Chỉnh sửa / yêu cầu sửa kết quả</option><option value="rework">Làm lại / phát sinh lại công việc</option></select></label>
 </div>
 <textarea id="ledger-text" placeholder="Dán một tin nhắn hoặc phần nội dung hội thoại cần ghi nhận. Nội dung chỉ được đếm, không được lưu vào sổ theo dõi."></textarea>
-<div class="actions"><button class="primary" id="ledger-add">Ghi nhận token</button><button class="secondary" id="ledger-export">Xuất báo cáo JSON</button><button class="secondary" id="ledger-clear">Xóa toàn bộ sổ</button></div>
+<div class="actions"><button class="primary" id="ledger-add">Ghi nhận token</button><button class="secondary" id="ledger-export">Xuất dữ liệu JSON</button><button class="secondary" id="ledger-import-trigger">Khôi phục JSON</button><input id="ledger-import-file" type="file" accept=".json,application/json" hidden><button class="secondary" id="ledger-clear">Xóa toàn bộ sổ</button></div>
 <p id="ledger-status" class="note" aria-live="polite">Chưa ghi nhận dữ liệu.</p>
 <div id="ledger-summary" class="ledger-summary"></div>
 <div id="ledger-projects" class="ledger-projects"></div>
