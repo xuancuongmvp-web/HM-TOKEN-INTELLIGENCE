@@ -40,7 +40,7 @@
     if (host.includes("chatgpt.com") || host.includes("openai.com")) {
       selectors = ["#prompt-textarea",'[data-testid="composer"] [contenteditable="true"]','[data-testid*="composer"] [contenteditable="true"]'];
     } else if (host.includes("gemini.google.com")) {
-      selectors = ["rich-textarea [contenteditable="true"]",".ql-editor[contenteditable="true",'div[contenteditable="true"][aria-label*="prompt" i]','rich-textarea textarea'];
+      selectors = ['rich-textarea [contenteditable="true"]','.ql-editor[contenteditable="true"]','div[contenteditable="true"][aria-label*="prompt" i]','rich-textarea textarea'];
     } else if (host.includes("claude.ai")) {
       selectors = ['[contenteditable="true"][data-placeholder]','[contenteditable="true"][aria-label*="reply" i]','[contenteditable="true"][role="textbox"]'];
     } else if (host.includes("copilot.microsoft.com")) {
