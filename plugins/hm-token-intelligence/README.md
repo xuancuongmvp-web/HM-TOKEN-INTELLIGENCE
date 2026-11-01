@@ -15,9 +15,9 @@ This portable Agent Plugin packages HM's reusable prompt-intelligence skill for 
 
 ## Invoke
 
-In ChatGPT, explicitly select the skill with `@hm-prompt-intelligence`, or ask naturally: "Use HM to review this prompt before I send it." The host can also implicitly select the skill when a request matches the skill description.
+In ChatGPT, type `@` and select **HM Prompt Intelligence**, or ask naturally: "Use HM to review this prompt before I send it." ChatGPT may also select the skill automatically when the request matches its description.
 
-In Codex surfaces, use `$hm-prompt-intelligence` or select it from the Skills picker.
+In Codex surfaces, type `$` and select `hm-prompt-intelligence`.
 
 Examples:
 - `@hm-prompt-intelligence Review this prompt before I send it: [paste target prompt]`
@@ -28,7 +28,7 @@ Examples:
 
 This repository includes a local marketplace at `../../.agents/plugins/marketplace.json`. In supported ChatGPT desktop Work/Codex plugin surfaces, open the repository as the active project, open the Plugins Directory, select the local/repo marketplace, and install **HM Token Intelligence**. See [the full install guide](../../docs/CHATGPT_PLUGIN_INSTALL.md).
 
-For a standalone ChatGPT Skill upload, use the `hm-prompt-intelligence` folder as a skill bundle (ZIP the folder with `SKILL.md` at its root). The ChatGPT Skills interface is available only on eligible plans/workspaces; verify the account has the Skills tab before attempting upload.
+For a standalone ChatGPT Skill upload, upload a ZIP whose top-level folder contains `SKILL.md` and its optional supporting files. The GitHub Actions workflow publishes a `hm-prompt-intelligence-skill.zip` artifact for eligible users.
 
 ## Boundaries in this release
 
@@ -37,7 +37,7 @@ This is a **skill-led plugin**, not yet an MCP-connected application.
 - The skill reviews text and files the user explicitly provides in the conversation.
 - It cannot inspect unsent text in the chat composer or hidden ChatGPT context.
 - It can prepare an improved prompt as a separate proposal, but does not replace or submit the original.
-- Exact tokenizer counts are not included yet. Without a tokenizer tool, the skill must label counts as estimates or say that exact counting is unavailable.
+- Exact tokenizer counts are not included yet. Without a tokenizer tool, the skill must label counts as estimates or say exact counting is unavailable.
 - The current MCP prototype is not wired into this package; it still needs HTTPS deployment, OAuth, per-user quotas, privacy controls, and security review.
 
 ## Availability
