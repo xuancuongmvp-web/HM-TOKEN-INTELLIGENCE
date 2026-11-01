@@ -35,20 +35,26 @@
   }
 
   function findComposer() {
-    const selectors = [
-      "#prompt-textarea",
-      '[data-testid="composer"] [contenteditable="true"]',
-      '[data-testid*="composer"] [contenteditable="true"]',
-      'textarea[placeholder]',
-      'textarea',
-      '[contenteditable="true"][role="textbox"]',
-      '[contenteditable="true"]'
-    ];
+    const host = location.hostname;
+    let selectors;
+    if (host.includes("chatgpt.com") || host.includes("openai.com")) {
+      selectors = ["#prompt-textarea",'[data-testid="composer"] [contenteditable="true"]','[data-testid*="composer"] [contenteditable="true"]'];
+    } else if (host.includes("gemini.google.com")) {
+      selectors = ["rich-textarea [contenteditable="true"]",".ql-editor[contenteditable="true",'div[contenteditable="true"][aria-label*="prompt" i]','rich-textarea textarea'];
+    } else if (host.includes("claude.ai")) {
+      selectors = ['[contenteditable="true"][data-placeholder]','[contenteditable="true"][aria-label*="reply" i]','[contenteditable="true"][role="textbox"]'];
+    } else if (host.includes("copilot.microsoft.com")) {
+      selectors = ['textarea[placeholder*="Ask" i]','textarea[placeholder]','[contenteditable="true"]'];
+    } else if (host.includes("perplexity.ai")) {
+      selectors = ['textarea[placeholder]','[contenteditable="true"][role="textbox"]','[contenteditable="true"]'];
+    } else {
+      selectors = ["#prompt-textarea",'[contenteditable="true"][role="textbox"]','textarea[placeholder]'];
+    }
     for (const selector of selectors) {
       const matches = [...document.querySelectorAll(selector)];
       const visible = matches.find(el => {
         const rect = el.getBoundingClientRect();
-        return rect.width > 0 && rect.height > 0 && rect.bottom > 0 && rect.top < innerHeight;
+        return rect.width > 0 && rect.height > 0 && rect.bottom > 0 && rect.top < innerHeight && !el.disabled;
       });
       if (visible) return visible;
     }
@@ -301,7 +307,8 @@
     clearTimeout(STATE.timer);
     STATE.timer=setTimeout(updateTrigger,300);
     if (STATE.panel?.classList.contains("hm-open")) {
-      STATE.timer=setTimeout(() => renderPanel(readComposer()),650);
+      const status = STATE.panel.querySelector(".hm-status");
+      if (status) status.textContent = "Ô chat vừa thay đổi. Đóng/mở lại HM để phân tích nội dung mới; các trường bạn đang điền được giữ nguyên.";
     }
   }
 
