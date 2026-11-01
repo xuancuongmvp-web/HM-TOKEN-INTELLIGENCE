@@ -35,32 +35,84 @@
   }
 
   function findComposer() {
-    const host = location.hostname;
-    let selectors;
-    if (host.includes("chatgpt.com") || host.includes("openai.com")) {
-      selectors = ["#prompt-textarea",'[data-testid="composer"] [contenteditable="true"]','[data-testid*="composer"] [contenteditable="true"]'];
-    } else if (host.includes("gemini.google.com")) {
-      selectors = ['rich-textarea [contenteditable="true"]','.ql-editor[contenteditable="true"]','div[contenteditable="true"][aria-label*="prompt" i]','rich-textarea textarea'];
-    } else if (host.includes("claude.ai")) {
-      selectors = ['[contenteditable="true"][data-placeholder]','[contenteditable="true"][aria-label*="reply" i]','[contenteditable="true"][role="textbox"]'];
-    } else if (host.includes("copilot.microsoft.com")) {
-      selectors = ['textarea[placeholder*="Ask" i]','textarea[placeholder]','[contenteditable="true"]'];
-    } else if (host.includes("perplexity.ai")) {
-      selectors = ['textarea[placeholder]','[contenteditable="true"][role="textbox"]','[contenteditable="true"]'];
-    } else {
-      selectors = ["#prompt-textarea",'[contenteditable="true"][role="textbox"]','textarea[placeholder]'];
+    // Chat products change their DOM often. Search common editor patterns,
+    // then score visible candidates instead of trusting one brittle selector.
+    const roots = [document];
+    const seenRoots = new Set();
+    for (let index = 0; index < roots.length; index++) {
+      const root = roots[index];
+      if (!root || seenRoots.has(root)) continue;
+      seenRoots.add(root);
+      let elements = [];
+      try { elements = [...root.querySelectorAll("*")]; } catch { continue; }
+      for (const el of elements) {
+        if (el.shadowRoot) roots.push(el.shadowRoot);
+        if (el.tagName === "IFRAME") {
+          try { if (el.contentDocument) roots.push(el.contentDocument); } catch { /* cross-origin iframe */ }
+        }
+      }
     }
-    for (const selector of selectors) {
-      const matches = [...document.querySelectorAll(selector)];
-      const visible = matches.find(el => {
-        const rect = el.getBoundingClientRect();
-        return rect.width > 0 && rect.height > 0 && rect.bottom > 0 && rect.top < innerHeight && !el.disabled;
-      });
-      if (visible) return visible;
-    }
-    return null;
-  }
 
+    const selectors = [
+      "#prompt-textarea",
+      '[data-testid="prompt-textarea"]',
+      '[data-testid="composer"] [contenteditable="true"]',
+      '[data-testid*="composer"] [contenteditable="true"]',
+      '[contenteditable="true"]',
+      '[role="textbox"]',
+      '[data-lexical-editor="true"]',
+      '[data-slate-editor="true"]',
+      "textarea",
+      'input:not([type="search"]):not([type="hidden"]):not([type="password"])'
+    ];
+    const candidates = new Set();
+    for (const root of roots) {
+      for (const selector of selectors) {
+        try { root.querySelectorAll(selector).forEach(el => candidates.add(el)); } catch { /* invalid selector in unusual host */ }
+      }
+    }
+
+    let best = null;
+    let bestScore = -Infinity;
+    for (const el of candidates) {
+      if (el.closest?.("#hm-inline-panel") || el.disabled || el.readOnly || el.getAttribute("aria-hidden") === "true") continue;
+      const editable = el.isContentEditable ||
+        el.getAttribute("contenteditable") === "true" ||
+        el.getAttribute("role") === "textbox" ||
+        el instanceof HTMLTextAreaElement ||
+        (el instanceof HTMLInputElement && ["text","search",""].includes(el.type)) ||
+        el.hasAttribute("data-lexical-editor") ||
+        el.hasAttribute("data-slate-editor");
+      if (!editable) continue;
+      const rect = el.getBoundingClientRect();
+      const style = getComputedStyle(el);
+      if (!rect.width || !rect.height || rect.bottom <= 0 || rect.top >= innerHeight ||
+          rect.right <= 0 || rect.left >= innerWidth || style.visibility === "hidden" || style.display === "none") continue;
+
+      const label = [
+        el.id, el.getAttribute("aria-label"), el.getAttribute("placeholder"),
+        el.getAttribute("data-placeholder"), el.getAttribute("data-testid"),
+        el.getAttribute("name")
+      ].filter(Boolean).join(" ").toLocaleLowerCase();
+      if (/(search|filter|find in page|tìm kiếm)/i.test(label)) continue;
+
+      const text = (("value" in el ? el.value : el.innerText || el.textContent) || "").trim();
+      let score = 0;
+      if (el === document.activeElement || roots.some(root => root.activeElement === el)) score += 120;
+      if (el.id === "prompt-textarea" || el.getAttribute("data-testid") === "prompt-textarea") score += 100;
+      if (el.isContentEditable || el.getAttribute("contenteditable") === "true") score += 65;
+      if (el instanceof HTMLTextAreaElement) score += 60;
+      if (el.getAttribute("role") === "textbox") score += 35;
+      if (el.hasAttribute("data-lexical-editor") || el.hasAttribute("data-slate-editor")) score += 45;
+      if (/(message|prompt|ask|chat|reply|nhắn tin|hỏi)/i.test(label)) score += 35;
+      if (text.length) score += 30;
+      if (rect.width > 260) score += 12;
+      if (rect.bottom > innerHeight * 0.55) score += 18;
+      if (el.closest("form")) score += 6;
+      if (score > bestScore) { best = el; bestScore = score; }
+    }
+    return bestScore >= 35 ? best : null;
+  }
   function readComposer(el = STATE.composer) {
     if (!el) return "";
     if (el instanceof HTMLTextAreaElement || el instanceof HTMLInputElement) return el.value.trim();
