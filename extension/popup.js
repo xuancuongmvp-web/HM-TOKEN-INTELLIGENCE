@@ -2,18 +2,20 @@ document.getElementById("analyze").addEventListener("click", async () => {
   const status = document.getElementById("status");
   const button = document.getElementById("analyze");
   button.disabled = true;
-  status.textContent = "HM đang tìm ô nhập của trang AI…";
+  status.textContent = "HM đang lấy nội dung từ ô chat…";
   try {
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-    if (!tab?.id) throw new Error("Không tìm thấy tab đang mở.");
+    if (!tab?.id) throw new Error("NO_ACTIVE_TAB");
     const result = await chrome.tabs.sendMessage(tab.id, { type: "HM_ANALYZE_NOW" });
     if (result?.ok) {
-      status.textContent = "Đã mở HM ngay cạnh ô chat. Hãy xem bảng HM trên trang.";
+      status.textContent = "Đã mở bảng HM ngay trên trang AI. Hãy xem cạnh ô chat.";
+    } else if (result?.reason === "EMPTY_COMPOSER") {
+      status.textContent = "HM đã tìm thấy vùng nhập nhưng chưa đọc được chữ. Hãy click vào ô chat, gõ một ký tự rồi thử lại. Mã chẩn đoán: " + JSON.stringify(result.diagnostics || {});
     } else {
-      status.textContent = "Chưa định vị được ô chat. Hãy bấm vào vùng nhập tin nhắn trên trang AI, đóng popup này rồi mở lại HM. Nếu vẫn lỗi, nhấn Ctrl+R để tải lại trang.";
+      status.textContent = "HM chưa nhận diện được trình soạn thảo. Hãy click vào ô chat, gõ một ký tự, đóng popup rồi thử lại. Mã chẩn đoán: " + JSON.stringify(result?.diagnostics || {});
     }
   } catch (error) {
-    status.textContent = "Tiện ích chưa được nạp vào tab này. Hãy tải lại trang AI (Ctrl+R), sau đó thử lại. Có thể cần bấm Reload ở trang quản lý tiện ích.";
+    status.textContent = "Không kết nối được HM trong tab này. Tại edge://extensions, kiểm tra phiên bản 0.3.2, nhấn Reload cho HM rồi quay lại ChatGPT nhấn Ctrl+R.";
   } finally {
     button.disabled = false;
   }
