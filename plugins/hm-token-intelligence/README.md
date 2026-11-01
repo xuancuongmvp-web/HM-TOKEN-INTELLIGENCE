@@ -1,6 +1,6 @@
 # HM Token Intelligence — portable ChatGPT Plugin
 
-Version: **0.2.0**
+Version: **0.3.0**
 
 This portable Agent Plugin packages HM's reusable prompt-intelligence skill for supported ChatGPT and Codex surfaces.
 
@@ -32,12 +32,12 @@ For a standalone ChatGPT Skill upload, upload a ZIP whose top-level folder conta
 
 ## Boundaries in this release
 
-This is a **skill-led plugin**, not yet an MCP-connected application.
+This is **Skill + Token Engine integration-ready**. The Skill now has an explicit tool workflow for the HM MCP tools `count_tokens`, `analyze_prompt`, and `compare_prompts`. The server implements these tools with `js-tiktoken` and tests their counting/comparison behavior. However, the remote MCP service has not yet been deployed and connected to this plugin, so exact counts are not yet callable from the installed Skill session.
 
 - The skill reviews text and files the user explicitly provides in the conversation.
 - It cannot inspect unsent text in the chat composer or hidden ChatGPT context.
 - It can prepare an improved prompt as a separate proposal, but does not replace or submit the original.
-- Exact tokenizer counts are not included yet. Without a tokenizer tool, the skill must label counts as estimates or say exact counting is unavailable.
+- Exact tokenizer code and MCP tools are implemented in `mcp-server/`; they become available inside this Skill only after the MCP server is deployed and its endpoint is registered in the plugin's MCP configuration. Until then, the Skill must say exact counting is not connected in the current session.
 - The current MCP prototype is not wired into this package; it still needs HTTPS deployment, OAuth, per-user quotas, privacy controls, and security review.
 
 ## Availability
