@@ -39,3 +39,13 @@ HM never auto-submits a prompt. Formatting cleanup is mechanical only; it does n
 - The prompt is processed locally in the browser. No backend receives the prompt text.
 - The score and warnings are experimental heuristics, not a prediction of answer quality.
 - The same PWA can be used beside ChatGPT in desktop browsers and mobile browsers. It is not a live overlay inside the native ChatGPT mobile or desktop composer.
+
+## What the current analysis shows
+
+Select **Phân tích prompt** (or press Ctrl+Enter) after pasting the text. Results appear below the editor and the page scrolls to them.
+
+The first analysis version checks for six visible structural signals: task, context/source, output format, constraints, audience, and completion criteria. It also looks for broad scope, missing context/output on analytical or creation tasks, vague references, exact duplicate lines, conflicting brevity/detail instructions, and unusually long prompts.
+
+This is a transparent rule-based MVP, not an AI model judging meaning. A phrase may be missed or a warning may not apply to a particular task. The six-part coverage indicator is not an absolute quality grade; simple questions do not need every dimension.
+
+The original prompt is deliberately left unchanged. HM shows findings and a separate formatting-only preview. Only the user's explicit action can copy or apply that preview.
