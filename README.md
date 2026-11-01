@@ -13,7 +13,7 @@ Using HM does not change the features or usage limits of the user's ChatGPT acco
 
 ## Run the PWA locally
 
-Requires Node.js 20+.
+Requires Node.js 20.19+ (or Node.js 22.12+).
 
 ```powershell
 cd pwa
