@@ -75,7 +75,7 @@ test("builds a project retrospective with manually tagged rework and clarificati
 
 test("counts words by whitespace and records no pasted text", () => {
   const ledger = createProjectLedger();
-  const { entry } = addUsageEntry(ledger, { projectName: "Words", role: "user", text: "one two\\nthree" });
+  const { entry } = addUsageEntry(ledger, { projectName: "Words", role: "user", text: "one two\nthree" });
   assert.equal(entry.words, 3);
   assert.equal(Object.hasOwn(entry, "text"), false);
 });
