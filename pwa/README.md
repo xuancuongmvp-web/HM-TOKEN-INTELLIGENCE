@@ -32,6 +32,25 @@ Static sites are served from a CDN and do not need an always-running server. The
 
 HM never auto-submits a prompt. Formatting cleanup is mechanical only; it does not paraphrase or remove ideas.
 
+## Optional project / conversation token ledger
+
+Open **Theo dõi token dự án (tùy chọn)** to create a local usage record. Enter a project name, conversation name, model label, and whether the pasted content is a user prompt, AI response, or other text. Paste one message or a transcript segment and select **Ghi nhận token**. Reuse the same project and conversation names to aggregate usage across work sessions.
+
+The ledger shows total tokens by project, user prompts, AI responses, conversations, and model. It can export a JSON usage report and delete individual projects or the entire local ledger.
+
+Privacy by design:
+- This feature is opt-in. Nothing is recorded unless the user presses the record button.
+- It stores only counts and metadata; pasted message contents are not retained.
+- Data stays in this browser's local storage and is not synced across devices.
+- Exported reports contain usage metadata, not conversation text.
+- To avoid double counting, record either individual messages or one combined transcript per conversation, not both.
+
+Accuracy boundary:
+- Counts are exact for the text pasted into HM using the selected encoding.
+- HM cannot automatically read a user's complete ChatGPT, Claude, or Gemini history, hidden system/developer instructions, tool calls, or provider billing records.
+- Provider billing may differ because models may use different tokenizers and may count cached input, reasoning, tool, image, audio, and video tokens differently.
+- For a provider's actual usage, import or manually enter official usage metadata separately; do not mix it with tokenizer-derived estimates.
+
 ## Accuracy and privacy
 
 - Token counts are exact for the supplied text and selected encoding, not for the full ChatGPT turn.
