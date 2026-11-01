@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>HM Prompt Inspector</title>
+<style>
+:root{font-family:Inter,system-ui,-apple-system,sans-serif;color:#172033;background:#f5f7fb}
+*{box-sizing:border-box}body{margin:0;padding:16px}main{max-width:820px;margin:auto;background:#fff;border:1px solid #e1e7f0;border-radius:18px;padding:20px;box-shadow:0 8px 28px #17203312}
+header{display:flex;align-items:center;gap:12px;margin-bottom:16px}.mark{font-size:26px}h1{font-size:19px;margin:0}header p{margin:3px 0 0;color:#65738b;font-size:12px}
+textarea{width:100%;min-height:150px;padding:12px;border:1px solid #cbd5e1;border-radius:12px;font:14px/1.5 inherit;resize:vertical}
+.row{display:flex;gap:10px;flex-wrap:wrap;margin:10px 0 16px}select,button{border:0;border-radius:10px;padding:10px 14px;font-weight:650;cursor:pointer}select{background:#eef2f7;color:#263449}button.primary{background:#b88a32;color:white}button.secondary{background:#e9eef6;color:#263449}button:disabled{opacity:.5;cursor:wait}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;margin:12px 0}.stat{background:#f2f5fa;border-radius:12px;padding:12px}.stat small{display:block;color:#65738b}.stat strong{font-size:22px}
+.score{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-radius:12px;background:#f4f6f9;margin:12px 0}.score strong{font-size:24px}
+.issue{border:1px solid #e2e8f0;border-left:4px solid #94a3b8;border-radius:10px;padding:11px;margin:9px 0}.issue.warning{border-left-color:#e6a23c}.issue.error{border-left-color:#dc5555}.issue.good{border-left-color:#22a06b}.issue.info{border-left-color:#5794d6}.issue p{margin:5px 0;color:#4b5870;font-size:13px}.issue b{font-size:14px}
+.muted{font-size:11px;color:#7b8798;line-height:1.45;margin-top:14px}.hidden{display:none}
+@media(max-width:520px){body{padding:8px}main{padding:14px}.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.score{align-items:flex-start;gap:8px;flex-direction:column}}
+</style></head><body><main>
+<header><span class="mark">🐈‍⬛</span><div><h1>HM TOKEN INTELLIGENCE</h1><p>Hiểu vấn đề · Kiểm soát token · Giữ chất lượng kết quả</p></div></header>
+<label for="prompt"><b>Prompt cần phân tích</b></label><textarea id="prompt" placeholder="Dán nội dung bạn muốn HM kiểm tra..."></textarea>
+<div class="row"><select id="encoding"><option value="o200k_base">o200k_base</option><option value="cl100k_base">cl100k_base</option><option value="p50k_base">p50k_base</option><option value="r50k_base">r50k_base</option></select><button class="primary" id="analyze">Phân tích prompt</button><button class="secondary" id="clean">Dọn định dạng</button></div>
+<section id="report" class="hidden" aria-live="polite"></section>
+<p class="muted">Token được đếm chính xác cho văn bản đã nhập theo encoding đã chọn. HM không đọc system prompt, lịch sử ẩn, tool schema hoặc payload đa phương tiện. Cảnh báo là gợi ý để bạn xem xét; HM không tự sửa hay gửi prompt.</p>
+</main>
+<script type="module">
+const $=s=>document.querySelector(s), report=$("#report"), input=$("#prompt");
+let rpcId=0;const pending=new Map();
+const notify=(method,params={})=>parent.postMessage({jsonrpc:"2.0",method,params},"*");
+const request=(method,params={})=>new Promise((resolve,reject)=>{const id=++rpcId;pending.set(id,{resolve,reject});parent.postMessage({jsonrpc:"2.0",id,method,params},"*")});
+addEventListener("message",e=>{if(e.source!==parent)return;const m=e.data;if(m?.jsonrpc!=="2.0"||typeof m.id!=="number")return;const p=pending.get(m.id);if(!p)return;pending.delete(m.id);m.error?p.reject(m.error):p.resolve(m.result)});
+const bridge=(async()=>{await request("ui/initialize",{appInfo:{name:"hm-prompt-inspector",version:"0.2.0"},appCapabilities:{},protocolVersion:"2026-01-26"});notify("ui/notifications/initialized")})();
+function el(tag,cls,text){const n=document.createElement(tag);if(cls)n.className=cls;if(text!==undefined)n.textContent=text;return n}
+function render(data){report.replaceChildren();report.classList.remove("hidden");const score=el("div","score");score.append(el("strong","",data.score+"/100"),el("span","",data.score_label+" · "+data.issue_count+" vấn đề cần xem xét"));report.append(score);
+const stats=el("div","stats");[["Token",data.tokens],["Từ",data.words],["Ký tự",data.characters],["Encoding",data.encoding]].forEach(([k,v])=>{const s=el("div","stat");s.append(el("small","",k),el("strong","",String(v)));stats.append(s)});report.append(stats);
+data.issues.forEach(i=>{const card=el("article","issue "+i.severity);card.append(el("b","",i.title),el("p","",i.explanation),el("p","", "Đề xuất: "+i.suggestion));report.append(card)});
+report.append(el("p","muted",data.estimate_note||data.note||"")); }
+async function call(name,args){await bridge;return request("tools/call",{name,arguments:args})}
+$("#analyze").addEventListener("click",async()=>{const text=input.value.trim();if(!text){input.focus();return}const b=$("#analyze");b.disabled=true;b.textContent="Đang phân tích…";try{const r=await call("analyze_prompt",{text,encoding:$("#encoding").value});render(r.structuredContent||{});}catch(e){report.classList.remove("hidden");report.textContent="Không thể phân tích: "+(e.message||"Lỗi kết nối")}finally{b.disabled=false;b.textContent="Phân tích prompt"}});
+$("#clean").addEventListener("click",async()=>{if(!input.value.trim())return;const b=$("#clean");b.disabled=true;try{const r=await call("optimize_prompt_formatting",{text:input.value});const d=r.structuredContent;if(d){render({score:"—",score_label:d.changed?"Có đề xuất dọn định dạng":"Không cần thay đổi",issue_count:d.operations.length,tokens:"—",words:"—",characters:input.value.length,encoding:"—",issues:d.operations.map((x,i)=>({severity:"info",title:"Thay đổi "+(i+1),explanation:x,suggestion:"Xem bản đề xuất trước khi áp dụng."})),note:d.note});const box=el("textarea");box.value=d.optimized;box.setAttribute("aria-label","Bản dọn định dạng");box.style.marginTop="10px";const copy=el("button","secondary","Sao chép bản đề xuất");copy.addEventListener("click",()=>navigator.clipboard.writeText(d.optimized));report.append(box,copy)}}catch(e){report.textContent="Không thể tối ưu: "+(e.message||"Lỗi")}finally{b.disabled=false}});
+</script></body></html>
