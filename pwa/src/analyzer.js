@@ -59,7 +59,7 @@ function contains(text, phrases) {
   const lower = text.toLocaleLowerCase();
   return phrases.some(phrase => {
     // CJK text has no whitespace word boundaries, so use substring matching.
-    if (/[\\u3400-\\u9fff]/u.test(phrase)) return lower.includes(phrase.toLocaleLowerCase());
+    if (/[\u3400-\u9fff]/u.test(phrase)) return lower.includes(phrase.toLocaleLowerCase());
     let at = lower.indexOf(phrase);
     while (at !== -1) {
       const before = at ? lower[at - 1] : "";
