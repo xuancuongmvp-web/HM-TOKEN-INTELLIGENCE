@@ -29,4 +29,4 @@ The root `render.yaml` now deploys only the static PWA. This MCP server is not p
 
 OpenAI's current documentation limits full custom MCP to Business and Enterprise/Edu on ChatGPT web. Pro is restricted to read/fetch permissions; mobile custom MCP is not supported. See [OpenAI's guide](https://help.openai.com/en/articles/12584461-connecting-custom-mcp-servers-in-chatgpt).
 
-This code remains experimental. It has no end-user account system. Do not use it for sensitive prompt content until a full security and privacy implementation is completed.
+This code remains experimental. Authentication is an initial bearer-token gate only; it does not provide user accounts, OAuth, per-user quotas, or production-grade privacy controls. Do not expose it as a public multi-user service until those controls and a security review are complete.
