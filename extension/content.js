@@ -278,8 +278,17 @@
     if (STATE.panel.classList.contains("hm-open")) {
       const width = Math.min(410,innerWidth-20);
       const panelLeft = Math.max(10,Math.min(innerWidth-width-10,rect.right-width));
-      const panelHeight = Math.min(650,innerHeight-24);
-      const panelTop = Math.max(10,Math.min(innerHeight-panelHeight-10,rect.top-panelHeight-12));
+      const gap = 12;
+      const availableAbove = Math.max(0,rect.top-gap-10);
+      const availableBelow = Math.max(0,innerHeight-rect.bottom-gap-10);
+      // Prefer the space above a bottom-anchored chat composer. Never place
+      // the panel over the active input when there is room on either side.
+      const placeAbove = availableAbove >= 220 || availableAbove >= availableBelow;
+      const available = placeAbove ? availableAbove : availableBelow;
+      const panelHeight = Math.max(140,Math.min(650,innerHeight-24,available));
+      const panelTop = placeAbove
+        ? Math.max(10,rect.top-panelHeight-gap)
+        : Math.min(innerHeight-panelHeight-10,rect.bottom+gap);
       STATE.panel.style.left = panelLeft+"px";
       STATE.panel.style.top = panelTop+"px";
       STATE.panel.style.width = width+"px";
