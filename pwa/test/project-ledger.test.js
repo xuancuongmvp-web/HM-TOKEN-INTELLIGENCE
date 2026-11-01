@@ -51,3 +51,9 @@ test("persists ledger metadata in local storage", () => {
   assert.equal(loadLedger(storage).projects[0].name, "Local");
   assert.equal(memory.has(LEDGER_STORAGE_KEY), true);
 });
+
+test("prevents mixing tokenizer encodings inside one project", () => {
+  const ledger = createProjectLedger();
+  addUsageEntry(ledger, { projectName: "Consistent", role: "user", text: "A", encoding: "o200k_base" });
+  assert.throws(() => addUsageEntry(ledger, { projectName: "Consistent", role: "assistant", text: "B", encoding: "cl100k_base" }), /giữ cùng encoding/);
+});
