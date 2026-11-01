@@ -1,0 +1,20 @@
+{
+  "name": "hm-token-intelligence",
+  "interface": {
+    "displayName": "HM Token Intelligence"
+  },
+  "plugins": [
+    {
+      "name": "hm-token-intelligence",
+      "source": {
+        "source": "local",
+        "path": "./plugins/hm-token-intelligence"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}
