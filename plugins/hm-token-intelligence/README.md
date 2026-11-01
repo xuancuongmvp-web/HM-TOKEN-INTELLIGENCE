@@ -1,31 +1,47 @@
-# HM Token Intelligence — ChatGPT Plugin / Skill package
+# HM Token Intelligence — portable ChatGPT Plugin
 
-This portable package contains the hm-prompt-intelligence skill. It teaches ChatGPT to diagnose and improve supplied prompts and to evaluate AI responses against the original request.
+Version: **0.2.0**
+
+This portable Agent Plugin packages HM's reusable prompt-intelligence skill for supported ChatGPT and Codex surfaces.
+
+## What is included
+
+- `plugin.json` — portable plugin manifest, OpenAI listing metadata, onboarding entrypoint.
+- `skills/hm-prompt-intelligence/SKILL.md` — the main HM review / improve / answer-audit workflow.
+- `skills/hm-prompt-intelligence/agents/openai.yaml` — skill display and invocation metadata.
+- `skills/setup/SKILL.md` — first-run orientation.
+- `assets/` — HM icon and logo.
+- `tests/ACCEPTANCE.md` — manual acceptance cases for prompt types and answer evaluation.
 
 ## Invoke
 
-In a ChatGPT surface that supports Skills/Plugins, explicitly select the skill (the ChatGPT skill picker is invoked with @) and provide the target prompt, or let the host select it based on the skill description.
+In ChatGPT, explicitly select the skill with `@hm-prompt-intelligence`, or ask naturally: "Use HM to review this prompt before I send it." The host can also implicitly select the skill when a request matches the skill description.
+
+In Codex surfaces, use `$hm-prompt-intelligence` or select it from the Skills picker.
 
 Examples:
-- @hm-prompt-intelligence Review this prompt before I send it: [paste target prompt]
-- @hm-prompt-intelligence Compare this answer with my original prompt: [include both]
+- `@hm-prompt-intelligence Review this prompt before I send it: [paste target prompt]`
+- `@hm-prompt-intelligence Improve this prompt but preserve every requirement: [paste target prompt]`
+- `@hm-prompt-intelligence Compare this answer with my original request: [include both]`
 
-## Important boundary
+## Install from this repository
 
-A skill is a reusable workflow instruction. By itself it cannot intercept or read unsent text in the composer, silently modify the current draft, count exact tokens unless a tokenizer tool/runtime is available, or inspect hidden ChatGPT context.
+This repository includes a local marketplace at `../../.agents/plugins/marketplace.json`. In supported ChatGPT desktop Work/Codex plugin surfaces, open the repository as the active project, open the Plugins Directory, select the local/repo marketplace, and install **HM Token Intelligence**. See [the full install guide](../../docs/CHATGPT_PLUGIN_INSTALL.md).
 
-For exact tokenizer counts and deterministic analysis tools, HM will add an authenticated MCP tool connection as a later plugin component. The current MCP prototype is not wired into this package: it has not yet been deployed with end-user authentication and production privacy controls.
+For a standalone ChatGPT Skill upload, use the `hm-prompt-intelligence` folder as a skill bundle (ZIP the folder with `SKILL.md` at its root). The ChatGPT Skills interface is available only on eligible plans/workspaces; verify the account has the Skills tab before attempting upload.
+
+## Boundaries in this release
+
+This is a **skill-led plugin**, not yet an MCP-connected application.
+
+- The skill reviews text and files the user explicitly provides in the conversation.
+- It cannot inspect unsent text in the chat composer or hidden ChatGPT context.
+- It can prepare an improved prompt as a separate proposal, but does not replace or submit the original.
+- Exact tokenizer counts are not included yet. Without a tokenizer tool, the skill must label counts as estimates or say that exact counting is unavailable.
+- The current MCP prototype is not wired into this package; it still needs HTTPS deployment, OAuth, per-user quotas, privacy controls, and security review.
 
 ## Availability
 
-The skill and portable plugin package are committed to this repository for development and testing. ChatGPT Skills availability is subject to account eligibility, rollout, and workspace admin settings. OpenAI currently documents Skills for eligible Business, Enterprise, Healthcare, and Edu users; this should not be assumed to be available on every Free, Go, Plus, or Pro account.
+Plugins are supported across ChatGPT Chat/Work on web, desktop, and mobile, but individual plugin capabilities vary by plan, role, region, workspace, and surface. ChatGPT Skills are currently documented for eligible Business, Enterprise, Healthcare, and Edu users, subject to availability and workspace settings. Do not assume a custom Skill works on every Free, Go, Plus, or Pro account.
 
-For broader access, retain the HM browser extension and standalone web app as fallback routes. Neither requires the AI platform to support custom Skills.
-
-## Package format
-
-This follows the current Agent Plugins package structure:
-- plugin.json — portable plugin manifest
-- skills/hm-prompt-intelligence/SKILL.md — reusable workflow
-
-No unauthenticated MCP endpoint is bundled.
+For users without Skills/plugin support, use the HM browser extension or standalone PWA.
