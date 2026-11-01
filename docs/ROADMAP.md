@@ -25,7 +25,11 @@ HM's primary product must work independently from ChatGPT subscription level. Th
 - [x] Add portable Agent Plugin package manifest
 - [x] Add HM prompt-intelligence skill with semantic review and answer-evaluation workflows
 - [x] Add repo-scoped ChatGPT desktop plugin marketplace manifest
-- [ ] Test local marketplace discovery and explicit skill invocation in ChatGPT Desktop
+- [x] Add first-run onboarding skill and ChatGPT skill UI metadata
+- [x] Add manual acceptance scenarios covering common and edge-case prompts
+- [x] Validate portable plugin paths and marketplace entry in CI
+- [x] Generate standalone Skill ZIP and portable Plugin ZIP as CI artifacts
+- [ ] Test local marketplace discovery and explicit skill invocation in ChatGPT Desktop / Work / Codex surfaces
 - [ ] Confirm feature eligibility and install flow across personal/workspace plans
 - [ ] Connect authenticated MCP tools for exact tokenization and deterministic analysis
 - [ ] Add interactive in-chat MCP app UI where supported
