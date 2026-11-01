@@ -138,6 +138,8 @@ const httpServer = createServer(async (req, res) => {
   }
   res.writeHead(404).end("Not Found");
 });
-if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {\n  httpServer.listen(PORT, "0.0.0.0", () => console.log(`HM Token Intelligence MCP listening on port ${PORT} at ${MCP_PATH}`));\n}
+if (process.argv[1] && fileURLToPath(import.meta.url) === resolve(process.argv[1])) {
+  httpServer.listen(PORT, "0.0.0.0", () => console.log(`HM Token Intelligence MCP listening on port ${PORT} at ${MCP_PATH}`));
+}
 
 export { analyzePrompt, optimizePrompt, countTokens };
