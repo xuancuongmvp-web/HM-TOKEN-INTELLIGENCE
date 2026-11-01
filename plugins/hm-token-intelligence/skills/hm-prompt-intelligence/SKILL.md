@@ -93,6 +93,39 @@ Label it "Bản đề xuất — chưa thay thế bản gốc". If the user only
 - Report before/after counts only when both are measured consistently.
 - Include a quality-risk note for any proposed compression.
 
+## Workflow C — Use the HM Token Engine when connected
+
+The HM MCP server exposes deterministic tokenizer tools. Use them whenever they are actually available in the current host session. Never simulate a tool call or claim that a tool was called if it is not present.
+
+### Available tool names
+
+- `count_tokens`: exact token count for one supplied text and selected encoding.
+- `analyze_prompt`: exact token count plus HM's current heuristic findings for one supplied text.
+- `compare_prompts`: exact before/after counts for two supplied versions using the same encoding.
+
+### Token-count workflow
+
+When the user asks to count tokens:
+1. Identify the exact text they want counted. If the target is ambiguous, ask which text; do not count the instruction addressed to HM by mistake.
+2. If `count_tokens` is available, call it with the exact supplied text and the requested encoding. Default to `o200k_base` only if the user has not specified an encoding and the host's target model is unknown.
+3. If `analyze_prompt` is available and the user wants a broader prompt review, call it on the same exact text.
+4. Report the count, encoding, and scope note. State that it is exact for the supplied text only, not for hidden system/developer instructions, server-side conversation history, tool schemas, or multimodal payloads.
+5. If the tokenizer tool is not available in the current session, say exact counting is not connected here. Do not invent a number or present a rough character-based estimate as an exact count.
+
+### Optimization and comparison workflow
+
+When improving a prompt:
+1. Preserve all facts, requirements, constraints, names, figures, language, and intent.
+2. Present the proposed version separately; do not replace the original.
+3. If `compare_prompts` is available, send the original and proposed text to it with the same encoding.
+4. Report original tokens, proposed tokens, tokens saved (a negative value means the proposal is longer), and percentage change.
+5. The tokenizer only measures length. It does not prove semantic equivalence. Independently compare the original requirements with the proposal and disclose anything that is weakened, removed, or still uncertain.
+6. Never optimize for the smallest token count at the expense of correctness, clarity, safeguards, or expected answer quality.
+
+### Tool availability and deployment boundary
+
+The MCP tool names above are part of the HM server implementation. They are usable only after that server is connected and exposed to the current plugin/session by the host. A skill file alone cannot create an MCP connection. If the host does not expose these tools, continue with semantic review but clearly mark exact tokenizer functionality as unavailable in this session.
+
 ## Workflow B — Evaluate an AI answer
 
 When the user supplies the original request and an AI answer:
