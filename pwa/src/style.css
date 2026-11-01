@@ -26,3 +26,16 @@ footer{padding:25px 0 36px;color:#8492a8;font-size:11px;line-height:1.6}footer>b
 .dimension.found .dimension-state{background:#173d34;color:#65d3a2}
 .dimension-copy{min-width:0}.dimension-copy b,.dimension-copy small{display:block}.dimension-copy b{font-size:11px}.dimension-copy small{font-size:9px;line-height:1.45;color:#8594aa;margin-top:3px}
 @media(max-width:640px){.dimensions{grid-template-columns:1fr}}
+
+.ledger-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:16px}
+.ledger-form label{display:flex;flex-direction:column;gap:7px;color:#aab8ca;font-size:11px}
+.ledger-form input,.ledger-form select{margin:0;width:100%;background:#0b1323;color:#e8edf4;border:1px solid #2b3b54;border-radius:8px;padding:11px;font:12px inherit}
+.project-panel textarea{min-height:130px}
+.ledger-summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:18px 0}
+.ledger-project{background:#0b1425;border:1px solid #2b3b54;border-radius:11px;padding:15px;margin:10px 0}
+.ledger-project-head{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.ledger-project h3{font-size:13px;margin:0 0 4px}.ledger-project-head small,.ledger-model{font-size:10px;color:#8e9db2}
+.ledger-remove{padding:8px 10px;font-size:10px}
+.ledger-breakdown{font-size:11px;color:#d8c59f;margin:12px 0 7px}
+.ledger-model{display:inline-block;margin:3px 10px 0 0}
+@media(max-width:640px){.ledger-form{grid-template-columns:1fr}.ledger-summary{grid-template-columns:repeat(2,minmax(0,1fr))}.ledger-project-head{align-items:flex-start}}
