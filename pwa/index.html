@@ -26,6 +26,21 @@
 <textarea id="clean-preview" readonly></textarea><p id="compare-meta" class="note"></p>
 <div class="actions"><button class="primary" id="copy-clean">Sao chép bản đề xuất</button><button class="secondary" id="use-clean">Đưa bản đề xuất vào ô soạn</button></div>
 </section>
+<section class="panel project-panel">
+<div class="section-head"><div><small>04</small><h2>Theo dõi token dự án (tùy chọn)</h2></div><span class="badge">LƯU CỤC BỘ</span></div>
+<p class="note">Ghi nhận từng tin nhắn hoặc đoạn hội thoại bạn chủ động dán vào HM. HM chỉ lưu số token và thông tin thống kê, không lưu nội dung tin nhắn. Dữ liệu nằm trong trình duyệt này.</p>
+<div class="ledger-form">
+<label>Tên dự án<input id="project-name" type="text" maxlength="120" placeholder="Ví dụ: Dự án triển khai website"></label>
+<label>Tên cuộc trò chuyện<input id="conversation-name" type="text" maxlength="120" placeholder="Ví dụ: Lập kế hoạch giai đoạn 1"></label>
+<label>Model AI<input id="model-name" type="text" maxlength="80" placeholder="Ví dụ: GPT-6, Claude, Gemini"></label>
+<label>Loại nội dung<select id="message-role"><option value="user">Tin nhắn người dùng / Prompt</option><option value="assistant">Phản hồi AI</option><option value="system">System / Instruction do bạn cung cấp</option><option value="other">Nội dung khác</option></select></label>
+</div>
+<textarea id="ledger-text" placeholder="Dán một tin nhắn hoặc phần nội dung hội thoại cần ghi nhận. Nội dung chỉ được đếm, không được lưu vào sổ theo dõi."></textarea>
+<div class="actions"><button class="primary" id="ledger-add">Ghi nhận token</button><button class="secondary" id="ledger-export">Xuất báo cáo JSON</button><button class="secondary" id="ledger-clear">Xóa toàn bộ sổ</button></div>
+<p id="ledger-status" class="note" aria-live="polite">Chưa ghi nhận dữ liệu.</p>
+<div id="ledger-summary" class="ledger-summary"></div>
+<div id="ledger-projects" class="ledger-projects"></div>
+</section>
 </main>
 <footer><b>HM <span>TOKEN INTELLIGENCE</span></b><p>HM không tự sửa hoặc gửi prompt. Giảm token không được đánh đổi bằng việc mất ý nghĩa hay chất lượng đầu ra.</p><small>Bản thử nghiệm · Không đọc hidden context, lịch sử ẩn hoặc payload đa phương tiện.</small></footer>
 </div><script type="module" src="/src/main.js"></script></body></html>
