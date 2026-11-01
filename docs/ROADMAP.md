@@ -16,7 +16,7 @@ HM's primary product must work independently from ChatGPT subscription level. Th
 - [x] Initial heuristic detection for vague scope, missing output criteria, ambiguous references, duplicate lines, long prompts, repeated characters
 - [x] User-reviewed formatting cleanup with before/after token counts
 - [x] Installable PWA manifest and service worker shell
-- [ ] Validate PWA build and tests in GitHub Actions
+- [x] Validate PWA build and tests in GitHub Actions (verified in GitHub Actions)
 - [ ] Expand multilingual test corpus across Vietnamese, English, and Chinese
 - [ ] Calibrate quality indicators against human-reviewed examples
 - [ ] Improve semantic intent checks and actionable rewrite suggestions
