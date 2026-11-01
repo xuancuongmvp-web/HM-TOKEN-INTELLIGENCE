@@ -32,7 +32,7 @@ jobs:
       - name: Build deployment Docker image
         run: docker build -f mcp-server/Dockerfile -t hm-token-intelligence-mcp .
       - name: Check browser extension JavaScript syntax
-        run: node --check extension/content.js
+        run: node --check extension/content.js && node --check extension/popup.js
       - name: Run MCP tests
         working-directory: mcp-server
         run: npm test
