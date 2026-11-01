@@ -67,6 +67,6 @@ OpenAI may change these screens and workspace permissions. Check the current off
 
 The service only analyzes text explicitly supplied to its tools. It cannot observe what someone is typing in the native ChatGPT composer, read hidden instructions, or inspect server-side conversation history. The browser extension is a separate early MVP for visible ChatGPT Web composer text in Chrome/Edge.
 
-The pilot is unauthenticated and rate-limited only by a shared process-wide request budget. It is not approved for confidential/company data or production workloads. Before wider use, implement an OAuth authorization server compatible with ChatGPT, per-user quotas, privacy/retention controls, monitoring, and security review.
+The pilot is unauthenticated. Its MCP route caps HTTP request bodies at 512 KiB and each tool's prompt text at 100,000 characters. A configurable process-wide budget defaults to 120 requests per minute and is shared by all callers; this is not per-user authentication. Do not send confidential/company data or use it for production workloads. Before wider use, implement an OAuth authorization server compatible with ChatGPT, per-user quotas, privacy/retention controls, monitoring, and security review.
 
 Do not describe HM as installed in ChatGPT until an eligible account completes a real connection and tool/widget test.
