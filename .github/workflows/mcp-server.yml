@@ -49,9 +49,9 @@ jobs:
           cp -R plugins/hm-token-intelligence/skills/hm-prompt-intelligence/agents dist/skill/hm-prompt-intelligence/
           cp plugins/hm-token-intelligence/skills/hm-prompt-intelligence/README.md dist/skill/hm-prompt-intelligence/
           (cd dist/skill && zip -qr ../hm-prompt-intelligence-skill.zip hm-prompt-intelligence)
-          mkdir -p dist/plugin/hm-token-intelligence
-          cp -R plugins/hm-token-intelligence/. dist/plugin/hm-token-intelligence/
-          (cd dist/plugin && zip -qr ../hm-token-intelligence-plugin.zip hm-token-intelligence)
+          mkdir -p dist/plugin
+          cp -R plugins/hm-token-intelligence/. dist/plugin/
+          (cd dist/plugin && zip -qr ../hm-token-intelligence-plugin.zip .)
       - name: Upload installable HM packages
         uses: actions/upload-artifact@v4
         with:
