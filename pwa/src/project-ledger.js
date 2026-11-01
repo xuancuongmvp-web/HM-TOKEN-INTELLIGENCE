@@ -92,7 +92,7 @@ export function exportProjectReportCSV(project) {
     ...Object.entries(report.byModel).map(([model, tokens]) => [report.project, "model:" + model, tokens])
   ];
   const escape = value => '"' + String(value ?? "").replace(/"/gu, '""') + '"';
-  return "\\uFEFF" + rows.map(row => row.map(escape).join(",")).join("\\r\\n");
+  return "\uFEFF" + rows.map(row => row.map(escape).join(",")).join("\r\n");
 }
 export function removeProject(ledger, projectId) {
   ledger.projects = ledger.projects.filter(project => project.id !== projectId);
