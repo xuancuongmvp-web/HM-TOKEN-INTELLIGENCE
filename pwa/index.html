@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="vi"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#111827">
+<meta name="description" content="Phân tích chất lượng prompt và token ngay trên thiết bị. Không cần API key hay gói ChatGPT đặc biệt.">
+<link rel="manifest" href="/manifest.webmanifest"><link rel="icon" href="/hm-icon.svg">
+<title>HM Token Intelligence</title></head>
+<body><div class="shell">
+<header><a class="brand" href="/"><b class="mark">HM</b><span><strong>HM TOKEN INTELLIGENCE</strong><small>Prompt quality · Token efficiency</small></span></a><span class="local">● XỬ LÝ TRÊN THIẾT BỊ</span></header>
+<main>
+<section class="intro"><p class="eyebrow">DÙNG ĐƯỢC VỚI MỌI GÓI CHATGPT</p><h1>Viết prompt rõ hơn.<br><em>Không lãng phí token.</em></h1><p>Phát hiện chỗ mơ hồ, thiếu đầu ra, trùng lặp và phần có thể gây hiểu sai. HM phân tích ngay trên thiết bị — không cần API key, không cần MCP.</p></section>
+<section class="panel">
+<div class="section-head"><div><small>01</small><h2>Nội dung cần phân tích</h2></div><label>Tokenizer <select id="encoding"><option>o200k_base</option><option>cl100k_base</option><option>p50k_base</option><option>r50k_base</option></select></label></div>
+<textarea id="prompt" spellcheck="false" placeholder="Dán prompt vào đây…&#10;&#10;HM sẽ đếm token thực tế, chỉ ra điểm có thể gây hiểu sai và giải thích cách cải thiện."></textarea>
+<div class="editor-meta"><span id="char-count">0 ký tự</span><span>Văn bản không rời khỏi trình duyệt</span></div>
+<div class="actions"><button class="primary" id="analyze">Phân tích prompt ↗</button><button class="secondary" id="clear">Xóa nội dung</button><span>Ctrl + Enter để phân tích</span></div>
+</section>
+<section id="results" class="panel hidden" aria-live="polite">
+<div class="section-head"><div><small>02</small><h2>Kết quả phân tích</h2></div><span class="badge">TOKENIZER THỰC TẾ</span></div>
+<div id="metrics" class="metrics"></div><div id="quality" class="quality"></div>
+<div class="section-head findings-head"><h3>Những điểm cần xem xét</h3><span id="finding-count"></span></div><div id="findings"></div><p id="count-note" class="note"></p>
+</section>
+<section id="cleanup" class="panel hidden">
+<div class="section-head"><div><small>03</small><h2>Bản dọn định dạng</h2></div><span class="review">CẦN BẠN DUYỆT</span></div>
+<p class="note">Chỉ chuẩn hóa khoảng trắng và xuống dòng. Nội dung gốc không bị thay thế.</p>
+<textarea id="clean-preview" readonly></textarea><p id="compare-meta" class="note"></p>
+<div class="actions"><button class="primary" id="copy-clean">Sao chép bản đề xuất</button><button class="secondary" id="use-clean">Đưa bản đề xuất vào ô soạn</button></div>
+</section>
+</main>
+<footer><b>HM <span>TOKEN INTELLIGENCE</span></b><p>HM không tự sửa hoặc gửi prompt. Giảm token không được đánh đổi bằng việc mất ý nghĩa hay chất lượng đầu ra.</p><small>Bản thử nghiệm · Không đọc hidden context, lịch sử ẩn hoặc payload đa phương tiện.</small></footer>
+</div><script type="module" src="/src/main.js"></script></body></html>
