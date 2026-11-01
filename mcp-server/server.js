@@ -14,6 +14,22 @@ const PORT = Number(process.env.PORT || 8787);
 const MCP_PATH = "/mcp";
 const ENCODINGS = ["o200k_base", "cl100k_base", "p50k_base", "r50k_base"];
 
+function hasAnyPhrase(text, phrases) {
+  const lower = text.toLocaleLowerCase("vi-VN");
+  return phrases.some(phrase => {
+    let index = lower.indexOf(phrase);
+    while (index !== -1) {
+      const before = index > 0 ? lower[index - 1] : "";
+      const end = index + phrase.length;
+      const after = end < lower.length ? lower[end] : "";
+      const isWord = character => Boolean(character) && /[\p{L}\p{N}_]/u.test(character);
+      if (!isWord(before) && !isWord(after)) return true;
+      index = lower.indexOf(phrase, index + 1);
+    }
+    return false;
+  });
+}
+
 function countTokens(text, encodingName = "o200k_base") {
   if (!ENCODINGS.includes(encodingName)) throw new Error("Unsupported encoding. Choose: " + ENCODINGS.join(", "));
   const encoding = getEncoding(encodingName);
@@ -29,11 +45,11 @@ function analyzePrompt(text, encodingName = "o200k_base") {
     issues.push({ severity, code, title, explanation, suggestion });
 
   if (!text.trim()) add("error", "empty", "Chưa có nội dung", "Hãy nhập prompt để HM có thể phân tích.", "Mô tả việc bạn muốn AI thực hiện.");
-  if (/\b(tất cả mọi thứ|mọi thứ|thật chi tiết|toàn bộ|càng nhiều càng tốt)\b/iu.test(text))
+  if (hasAnyPhrase(text, ["tất cả mọi thứ", "mọi thứ", "thật chi tiết", "toàn bộ", "càng nhiều càng tốt"]))
     add("warning", "scope", "Phạm vi chưa rõ", "Các cụm từ bao quát không xác định hạng mục hoặc giới hạn cần kiểm tra.", "Nêu rõ phạm vi, thứ tự ưu tiên và mức độ chi tiết.");
-  if (/\b(hãy làm|giúp tôi|xử lý|phân tích|kiểm tra)\b/iu.test(text) && !/\b(đầu ra|định dạng|bảng|danh sách|từng bước|file|tiêu chí|kết luận)\b/iu.test(text))
+  if (hasAnyPhrase(text, ["hãy làm", "giúp tôi", "xử lý", "phân tích", "kiểm tra"]) && !hasAnyPhrase(text, ["đầu ra", "định dạng", "bảng", "danh sách", "từng bước", "file", "tiêu chí", "kết luận"]))
     add("warning", "output", "Chưa xác định đầu ra", "AI chưa được chỉ rõ cần trả về dạng kết quả nào.", "Bổ sung định dạng đầu ra và tiêu chí hoàn thành.");
-  if (/\b(nó|cái này|ở đó|như trên|như đã nói)\b/iu.test(text) && words < 100)
+  if (hasAnyPhrase(text, ["nó", "cái này", "ở đó", "như trên", "như đã nói"]) && words < 100)
     add("warning", "reference", "Tham chiếu có thể thiếu ngữ cảnh", "Các từ thay thế có thể không rõ nếu nội dung trước đó không nằm trong ngữ cảnh.", "Thay bằng tên đối tượng, vị trí hoặc thông tin cụ thể.");
   const normalized = lines.map(line => line.toLocaleLowerCase());
   const repeated = [...new Set(normalized.filter((line, index) => normalized.indexOf(line) !== index))];
