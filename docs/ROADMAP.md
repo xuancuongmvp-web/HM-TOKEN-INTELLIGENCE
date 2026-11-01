@@ -25,8 +25,8 @@ The product's core is prompt quality and token efficiency: detect avoidable wast
 - [ ] Native desktop/mobile support only where the host officially exposes the required integration APIs
 
 ## 0.4 direct ChatGPT integration
-- [ ] Apps SDK interactive UI
-- [ ] Remote MCP server with stable public HTTPS endpoint
+- [x] Initial Apps SDK/MCP-compatible interactive UI and Streamable HTTP server scaffold committed
+- [ ] Remote MCP server deployment with stable public HTTPS endpoint
 - [ ] Authentication, privacy controls, rate limits, and abuse protection
 - [ ] Test custom app connection on eligible ChatGPT web accounts/workspaces
 - [ ] Verify desktop/mobile client support before claiming availability there
