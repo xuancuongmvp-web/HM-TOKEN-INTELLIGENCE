@@ -1,0 +1,8 @@
+interface:
+  display_name: "HM Prompt Intelligence"
+  short_description: "Review and improve prompts while preserving intent."
+  default_prompt: "Use HM to review this prompt, explain the important risks, and propose an improved version without changing my original."
+  brand_color: "#D7AE62"
+
+policy:
+  allow_implicit_invocation: true
