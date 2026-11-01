@@ -1,8 +1,8 @@
 FROM node:22-alpine
 WORKDIR /app
-COPY package*.json ./
+COPY mcp-server/package*.json ./
 RUN npm install --omit=dev
-COPY . .
+COPY mcp-server/ ./
 ENV NODE_ENV=production
 EXPOSE 8787
 CMD ["npm","start"]
