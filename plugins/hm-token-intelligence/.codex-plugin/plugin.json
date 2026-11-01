@@ -1,7 +1,7 @@
 {
   "name": "hm-token-intelligence",
-  "version": "0.2.0",
-  "description": "A reusable prompt-intelligence workflow to diagnose, improve, and evaluate AI prompts while preserving the user's intent and answer quality.",
+  "version": "0.3.0",
+  "description": "Prompt intelligence and token-efficiency assistant with an MCP-ready exact tokenizer workflow.",
   "skills": "./skills/",
   "interface": {
     "displayName": "HM Token Intelligence",
