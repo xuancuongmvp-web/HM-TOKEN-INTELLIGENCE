@@ -1,53 +1,55 @@
 # Roadmap
 
-The product's core is prompt quality and token efficiency: detect avoidable waste, explain why it matters, suggest improvements, and preserve the user's intended result. Token reduction alone is not success.
+HM's primary product must work independently from ChatGPT subscription level. The central goal is prompt quality and token efficiency without weakening the user's intended result.
 
 ## 0.1 foundation
-- [x] Explicit tiktoken encoding counts
-- [x] FastAPI endpoints and browser playground
-- [x] Conservative deterministic cleanup
-- [x] Tests and CI workflow files created (CI/runtime status must be verified)
-- [x] Accuracy boundaries documented
-- [x] Early Chrome/Edge Prompt Monitor extension scaffold
+- [x] Exact tokenizer counting for explicitly supplied text
+- [x] Python API and local playground
+- [x] Conservative formatting cleanup preview
+- [x] Automated Python tests
+- [x] Early Chrome/Edge composer monitor
+- [x] Experimental MCP server and widget
 
-## 0.2 prompt intelligence (core)
-- [x] Initial transparent prompt score with explainable findings (heuristic MVP; calibration and evaluation remain)
-- [x] Initial detection for vague scope, missing output criteria, ambiguous references, duplicate lines, long prompts, and suspicious repeated characters
-- [ ] Expand and validate detection quality across Vietnamese, Chinese, and English with a human-reviewed golden corpus
-- [ ] Inline issue highlighting and actionable suggestions
-- [ ] Before/after comparison: token estimate, quality signals, and semantic intent checklist
-- [ ] Result feedback: determine whether the answer met the requested outcome and identify avoidable rework
+## 0.2 universal local-first core
+- [x] Standalone PWA project and responsive interface
+- [x] Exact local tokenizer counts for four supported encodings
+- [x] Initial heuristic detection for vague scope, missing output criteria, ambiguous references, duplicate lines, long prompts, repeated characters
+- [x] User-reviewed formatting cleanup with before/after token counts
+- [x] Installable PWA manifest and service worker shell
+- [ ] Validate PWA build and tests in GitHub Actions
+- [ ] Expand multilingual test corpus across Vietnamese, English, and Chinese
+- [ ] Calibrate quality indicators against human-reviewed examples
+- [ ] Improve semantic intent checks and actionable rewrite suggestions
 
-## 0.3 one-click cross-platform experience
-- [ ] Test and stabilize Chrome/Edge extension on current ChatGPT web composer
-- [ ] Mobile-first companion PWA with paste/share, analysis, and copy-back workflow
-- [ ] Accessible, simple onboarding and install guide
-- [ ] Native desktop/mobile support only where the host officially exposes the required integration APIs
+## 0.3 one-click cross-platform access
+- [x] Free static-site hosting Blueprint for PWA prepared
+- [ ] Deploy the PWA to a public HTTPS address
+- [ ] Verify install flow on Windows, macOS, Android, and iOS browsers
+- [ ] Add reliable share-to-HM workflow on supported mobile browsers
+- [ ] Stabilize Chrome/Edge extension and verify current ChatGPT Web composer selectors
+- [ ] Add exact tokenizer to packaged extension build
+- [ ] Publish signed/reviewed browser extension packages
+- [ ] Verify native ChatGPT Desktop/mobile options only where host APIs permit
 
-## 0.4 direct ChatGPT integration
-- [x] Initial Apps SDK/MCP-compatible interactive UI and Streamable HTTP server scaffold committed
-- [x] Node analyzer tests pass in GitHub Actions
-- [x] Python API tests pass in GitHub Actions
-- [x] Production dependency audit passes in GitHub Actions
-- [x] Free-tier Render Blueprint prepared at repository root (deployment not yet performed)
-- [x] Basic request-body cap and process-wide rate budget implemented
-- [ ] Remote MCP server deployment with stable public HTTPS endpoint
-- [ ] OAuth authentication, per-user quotas, privacy controls, and production abuse protection
-- [ ] Test custom app connection and interactive widget on an eligible ChatGPT Business or Enterprise/Edu web workspace
-- [ ] Verify desktop/mobile client support before claiming availability there
-- [ ] Public app submission and review, subject to OpenAI requirements
+## 0.4 optional ChatGPT MCP integration
+- [x] Initial Apps SDK/MCP-compatible server and widget committed
+- [x] Node analyzer tests and production dependency audit configured
+- [x] Docker build check configured
+- [ ] OAuth, per-user quotas, privacy controls, production security review
+- [ ] Deploy MCP only when an eligible ChatGPT web workspace and a clear use case exist
+- [ ] Verify app/widget interaction in an eligible workspace
 
-## 0.5 model and cost intelligence
+## 0.5 response quality and cost intelligence
+- [ ] Result feedback: determine whether the requested outcome was achieved
+- [ ] Identify avoidable rework and distinguish prompt-caused versus model-caused failure
 - [ ] Provenance-backed model-to-encoding registry
-- [ ] Dated configurable pricing separated by input/output/cache/reasoning categories
-- [ ] Provider usage import adapters
-- [ ] Prompt diff and JSON export
-- [ ] Gemini and other provider adapters
+- [ ] Dated pricing by input/output/cache/reasoning category
+- [ ] Prompt diff, intent checklist, and export
+- [ ] Additional provider adapters
 
 ## 1.0 production readiness
 - [ ] Security and privacy review
-- [ ] Rate limits and quotas
-- [ ] Privacy-preserving observability
+- [ ] Browser/device regression testing
 - [ ] Accessibility and localization
 - [ ] Reproducible release builds
-- [ ] Automated tests across supported browsers and devices
+- [ ] Privacy-preserving observability and support process
