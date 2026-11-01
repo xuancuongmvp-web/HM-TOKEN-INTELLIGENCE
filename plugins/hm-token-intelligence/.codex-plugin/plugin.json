@@ -1,0 +1,27 @@
+{
+  "name": "hm-token-intelligence",
+  "version": "0.2.0",
+  "description": "A reusable prompt-intelligence workflow to diagnose, improve, and evaluate AI prompts while preserving the user's intent and answer quality.",
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "HM Token Intelligence",
+    "shortDescription": "Diagnose and improve prompts without losing intent.",
+    "longDescription": "HM reviews the task, scope, context, constraints, output requirements, consistency, and token efficiency. It explains concrete risks, proposes an improved prompt for user approval, and can evaluate an AI answer against the original request. HM never silently replaces or submits a prompt.",
+    "developerName": "HM Token Intelligence",
+    "category": "Productivity",
+    "websiteURL": "https://github.com/xuancuongmvp-web/HM-TOKEN-INTELLIGENCE",
+    "defaultPrompt": [
+      "Use HM to review this prompt before I send it.",
+      "Use HM to improve this prompt while preserving all important requirements.",
+      "Use HM to compare this AI answer with my original request."
+    ],
+    "brandColor": "#D7AE62",
+    "composerIcon": "./assets/hm-icon.svg",
+    "logo": "./assets/hm-logo.svg"
+  },
+  "extensions": {
+    "com.openai": {
+      "onboardingSkill": "./skills/setup/SKILL.md"
+    }
+  }
+}
