@@ -58,8 +58,10 @@
       '[data-testid="prompt-textarea"]',
       '[data-testid="composer"] [contenteditable="true"]',
       '[data-testid*="composer"] [contenteditable="true"]',
-      '[contenteditable="true"]',
+      '[contenteditable]:not([contenteditable="false"])',
       '[role="textbox"]',
+      '[data-placeholder]',
+      '[aria-multiline="true"]',
       '[data-lexical-editor="true"]',
       '[data-slate-editor="true"]',
       "textarea",
@@ -85,7 +87,7 @@
         el.hasAttribute("data-slate-editor");
       if (!editable) continue;
       const rect = el.getBoundingClientRect();
-      const style = getComputedStyle(el);
+      const style = el.ownerDocument.defaultView.getComputedStyle(el);
       if (!rect.width || !rect.height || rect.bottom <= 0 || rect.top >= innerHeight ||
           rect.right <= 0 || rect.left >= innerWidth || style.visibility === "hidden" || style.display === "none") continue;
 
